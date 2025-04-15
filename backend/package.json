@@ -1,6 +1,14 @@
 {
   "dependencies": {
+    "@azure/storage-blob": "^12.27.0",
+    "@prisma/client": "^6.5.0",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/ws": "^8.18.0",
+    "argon2": "^0.41.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.1.5",
     "typescript": "^5.8.2",
     "ws": "^8.18.1"
   },
@@ -8,12 +16,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "dev": "tsc -b && node dist/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/express": "^5.0.1"
+  }
 }

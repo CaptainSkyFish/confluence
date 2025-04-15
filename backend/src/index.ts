@@ -1,25 +1,20 @@
-import { WebSocket, WebSocketServer } from "ws"
+import userRoutes from "./routes/userRoutes"
+import roomRoutes from "./routes/roomRoutes"
+import messageRoutes from "./routes/messageRoutes"
+import express from "express"
 
-const wss = new WebSocketServer({port:2025})
+const app = express()
 
-let users = 0
-let allSockets: WebSocket[] = []
+app.use(express.json())
 
-wss.on("connection", (socket) =>{
-  allSockets.push(socket)
-  ++users
-  console.log("user #" + users + "connected.")
-  
-  socket.on("message", (message) => {
-    allSockets.forEach(s => {
-      s.send(message.toString())
-    })
-  })
+const PORT = process.env.PORT || 3000
 
-  socket.on("disconnect", () => {
-    allSockets = allSockets.filter(x => x != socket)
-  })
-
-
+app.listen(PORT, () => {
+  console.log(`server running on ${PORT}`)
 })
 
+app.use("/api/v1/room", roomRoutes)
+
+app.use("/api/v1/user", userRoutes)
+
+app.use("api/v1/messages", messageRoutes)

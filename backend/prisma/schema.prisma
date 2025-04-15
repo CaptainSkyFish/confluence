@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String            @id @default(uuid())
+  username       String            @unique
+  password       String
+  messages       Message[]
+  reactions      MessageReaction[]
+  viewedMessages MessageView[]
+  rooms          Room[]            @relation("RoomToUser")
+}
+
+model Room {
+  id        String    @id @default(cuid())
+  roomName  String
+  createdAt DateTime  @default(now())
+  messages  Message[]
+  users     User[]    @relation("RoomToUser")
+}
+
+model Message {
+  id        String            @id @default(uuid())
+  content   String
+  mediaUrl  String?
+  senderId  String
+  roomId    String
+  timestamp DateTime          @default(now())
+  replyToId String?
+  replyTo   Message?          @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies   Message[]         @relation("MessageReplies")
+  room      Room              @relation(fields: [roomId], references: [id])
+  sender    User              @relation(fields: [senderId], references: [id])
+  reactions MessageReaction[]
+  views     MessageView[]
+}
+
+model MessageView {
+  id        String   @id @default(uuid())
+  messageId String
+  userId    String
+  viewedAt  DateTime @default(now())
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+}
+
+model MessageReaction {
+  id        String  @id @default(uuid())
+  messageId String
+  userId    String
+  type      String
+  message   Message @relation(fields: [messageId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@unique([userId, messageId, type])
+}
