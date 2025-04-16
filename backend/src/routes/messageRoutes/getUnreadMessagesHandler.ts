@@ -26,7 +26,7 @@ const getUnreadMessagesHandler: RequestHandler = async (req: Request, res: Respo
         messageId: true
       }
     })
-    const viewedIds = viewed.map(v => v.messageId)
+    const viewedIds = viewed.map((v: {messageId: string} ) => v.messageId)
 
     const unreadMessages = await prisma.message.findMany({
       where: {

@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  //output   = "./node_modules/@prisma/client"
 }
 
 datasource db {
@@ -14,15 +15,21 @@ model User {
   messages       Message[]
   reactions      MessageReaction[]
   viewedMessages MessageView[]
-  rooms          Room[]            @relation("RoomToUser")
+  bio            String
+  rooms          Room[]            @relation("Membership")
+  createdRooms   Room[]            @relation("Creator")
+  isDeleted      Boolean           @default(false)
 }
 
 model Room {
-  id        String    @id @default(cuid())
-  roomName  String
-  createdAt DateTime  @default(now())
-  messages  Message[]
-  users     User[]    @relation("RoomToUser")
+  id          String    @id @default(cuid())
+  roomName    String
+  description String
+  createdAt   DateTime  @default(now())
+  messages    Message[]
+  users       User[]    @relation("Membership")
+  createdById String
+  createdBy   User      @relation("Creator", fields: [createdById], references: [id])
 }
 
 model Message {
@@ -35,7 +42,7 @@ model Message {
   replyToId String?
   replyTo   Message?          @relation("MessageReplies", fields: [replyToId], references: [id])
   replies   Message[]         @relation("MessageReplies")
-  room      Room              @relation(fields: [roomId], references: [id])
+  room      Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
   sender    User              @relation(fields: [senderId], references: [id])
   reactions MessageReaction[]
   views     MessageView[]
@@ -57,8 +64,8 @@ model MessageReaction {
   messageId String
   userId    String
   type      String
-  message   Message @relation(fields: [messageId], references: [id])
-  user      User    @relation(fields: [userId], references: [id])
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, messageId, type])
 }

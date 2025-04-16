@@ -5,13 +5,15 @@ import createRoomHandler from "./roomRoutes/createRoomHandler"
 import getUsersInRoomHandler from "./roomRoutes/getUsersInRoomHandler"
 import joinRoomHandler from "./roomRoutes/joinRoomHandler"
 import leaveRoomHandler from "./roomRoutes/leaveRoomHandler"
+import deleteRoomHandler from "./roomRoutes/deleteRoomHandler"
 
 const router = express.Router()
 
 router.post("/", authenticateUser, createRoomHandler)
 router.get("/all", getAllRoomsHandler)
-router.get("/:roomId/users", authenticateUser, getUsersInRoomHandler)
+router.get("/users/:roomId", authenticateUser, getUsersInRoomHandler)
 router.post("/join/:roomId", authenticateUser, joinRoomHandler)
 router.post("/leave/:roomId", authenticateUser, leaveRoomHandler)
+router.delete("/delete/:roomId", authenticateUser, deleteRoomHandler)
 
 export default router

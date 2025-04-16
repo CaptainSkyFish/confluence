@@ -1,5 +1,5 @@
-import prisma from "../config/prisma"
-import express, { Request, RequestHandler, Response } from "express"
+import { Request, RequestHandler, Response } from "express"
+import prisma from "../../config/prisma"
 import * as argon2 from "argon2"
 import jwt from "jsonwebtoken"
 
@@ -19,8 +19,8 @@ const signinHandler: RequestHandler = async(req: Request, res: Response) => {
       const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET!)
       res.cookie("jwt", token, {
         httpOnly: true,
-        secure: true,
-        sameSite: "strict",
+        secure: false,
+        sameSite: "lax",
       })
       res.status(200).json(`Logged in as ${user.username}`)
       return
