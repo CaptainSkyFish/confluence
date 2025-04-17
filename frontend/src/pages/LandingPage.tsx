@@ -1,31 +1,16 @@
-import "./landing.css"
+import { Appbar } from "../components/Appbar"
+import { Footer } from "../components/Footer"
+
 const LandingPage = () => {
   return <div>
-    <div className="bg-white relative rounded-b-3xl text-center z-10 min-h-screen text-black mb-[300px]">
-      <div className="font-extrabold w-2 p-10 text-center text-8xl ">Main Content Goes Here</div>
-      <div className="p-5">
-      <p>some cool content....</p>
-      <p>some cool content....</p>
-      <p>some cool content....</p>
-      <p>some cool content....</p>
-      <p>some cool content....</p>
-      <p>some cool content....</p>
-      <p>some cool content....</p>
-      <p>some cool content....</p>
-      <p>some cool content....</p>
-      <p>some cool content....</p>
-      <p>some cool content....</p>
-      </div>
+    <div className="relative bg-[#e9e6e1] min-h-screen z-10 mb-[300px] rounded-b-4xl">
+      <Appbar />
+      <div className="grid grid-cols-2">
+        <div className=" text-black font-extrabold text-wrap text-8xl p-5">Where Conversations Come to Life.</div>
+        <img src="" alt="landingPageimg.jpeg"></img>
+      </div>  
     </div>
-
-    <div className="fixed moving gradient z-0 h-[400px] bottom-0 text-center w-screen text-8xl bg-black text-white">
-      <div className="text-sm px-30 py-30 flex justify-between items-center">
-        <span>info</span>
-        <span>link</span>
-        <span>about</span>
-      </div>
-      <div>Footer Reveals...</div>
-    </div>
+    <Footer />
   </div> 
 }
 
