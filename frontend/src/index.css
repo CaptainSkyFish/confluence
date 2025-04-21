@@ -1,12 +1,25 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'rosamila';
-  src: url('/fonts/Rosamila\ Regular.otf') format('opentype');
+  font-family: "rosamila";
+  src: url("/fonts/Rosamila\ Regular.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: "casselin";
+  src: url("/fonts/Casselin.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "krylon";
+  src: url("/fonts/Krylon-Regular.woff2") format("woff2");
+}
 
 @theme {
-  --font-rosamila: 'rosamila', sans-serif;
+  --font-casselin: "casselin", sans-serif;
+}
+@theme {
+  --font-krylon: "krylon", sans-serif;
 }

@@ -1,0 +1,31 @@
+.scrolling-track {
+  display: flex;
+  width: max-content;
+  gap: 4rem;
+  animation: scroll-left 20s linear infinite;
+}
+
+.scrolling-track.paused {
+  animation-play-state: paused;
+}
+
+.app-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  font-weight: bold;
+  color: white;
+  white-space: nowrap;
+  text-align: center;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
