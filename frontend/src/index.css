@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+::selection {
+  background-color: #ffffe0;
+  color: #77b77c;
+}
+
 @font-face {
   font-family: "rosamila";
   src: url("/fonts/Rosamila\ Regular.otf") format("opentype");
@@ -22,4 +27,66 @@
 }
 @theme {
   --font-krylon: "krylon", sans-serif;
+}
+.shine {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  color: inherit;
+}
+
+.shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: shine 2.5s infinite;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  60% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+.grainy::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVR4nGNgAAAAAgABSK+kcQAAAABJRU5ErkJggg==");
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  pointer-events: none;
 }
