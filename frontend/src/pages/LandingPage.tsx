@@ -46,7 +46,7 @@ const LandingPage = () => {
                 </svg>
                 <Link
                   to="/me"
-                  className="group-hover:pl-5 group-hover:underline transition-all duration-500 text-[#1C274C]"
+                  className="group-hover:pl-5 shine group-hover:underline transition-all duration-500 text-[#1C274C]"
                 >
                   Get Started for free
                 </Link>
