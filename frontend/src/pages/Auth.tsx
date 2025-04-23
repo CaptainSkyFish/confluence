@@ -7,7 +7,6 @@ export default function SignIn() {
         <div className="hidden lg:block">
           <Inbox />
         </div>
-        <Auth type="signin" />
       </div>
     </div>
   );
