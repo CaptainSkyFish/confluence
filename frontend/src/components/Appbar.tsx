@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export const Appbar = () => {
   return (
-    <div className="fixed z-15 left-1/2 h-[60px] w-full flex items-center max-w-[650px] transform -translate-x-1/2 rounded-full bg-indigo-400/5 backdrop-filter backdrop-blur-md bg-opacity-20 px-6 top-6">
+    <div className="fixed z-15 left-1/2 h-[60px] w-full flex items-center max-w-[650px] transform -translate-x-1/2 rounded-full bg-indigo-400/5 backdrop-filter backdrop-blur-md px-6 top-6">
       <Link
         to="/"
         className="font-extrabold flex flex-grow font-casselin text-3xl bg-gradient-to-r from-[#9796F0] to-[#FBC7D4] bg-clip-text text-transparent"
