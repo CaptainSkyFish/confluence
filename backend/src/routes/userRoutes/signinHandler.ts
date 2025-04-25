@@ -19,7 +19,7 @@ const signinHandler: RequestHandler = async(req: Request, res: Response) => {
       const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET!)
       res.cookie("jwt", token, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: "lax",
       })
       res.status(200).json(`Logged in as ${user.username}`)
