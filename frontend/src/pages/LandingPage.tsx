@@ -19,10 +19,10 @@ const LandingPage = () => {
         <Appbar />
         <div className="grid w-4/5 mx-auto pt-[108px] px-12 grid-cols-2">
           <div>
-            <div className="text-transparent bg-gradient-to-br from-[#ffffe0]/70 to-[#ffffe0] bg-clip-text font-krylon pl-0 font-bold text-wrap text-7xl/snug p-5">
+            <div className="text-transparent fade-up bg-gradient-to-br from-[#ffffe0]/70 to-[#ffffe0] bg-clip-text font-krylon pl-0 font-bold text-wrap text-7xl/snug p-5">
               Where conversations come to life
             </div>
-            <div className="text-[#e9e6e1] pl-0 w-4/5 font-semibold text-wrap text-sm/normal p-2">
+            <div className="text-[#e9e6e1] fade-up pl-0 w-4/5 font-semibold text-wrap text-sm/normal p-2">
               Build private rooms, invite friends, and experience seamless,
               secure real-time chat—right from your browser.
             </div>
@@ -74,7 +74,7 @@ const LandingPage = () => {
               </div>
             </div>
           </div>
-          <div className="absolute right-0 w-[750px] h-[550px] overflow-hidden rounded-tl-4xl bg-gradient-to-tr from-[#9796F0] to-[#FBC7D4]">
+          <div className="absolute fade-up right-0 w-[750px] h-[550px] overflow-hidden rounded-tl-4xl bg-gradient-to-tr from-[#9796F0] to-[#FBC7D4]">
             <div className="relative w-[800px] h-[600px] hover:-translate-y-2 hover:-translate-x-2 transition-transform duration-300 ease-in-out">
               <img
                 src="/images/landingPageimg.PNG"

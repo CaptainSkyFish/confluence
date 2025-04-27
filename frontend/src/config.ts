@@ -1,1 +1,8 @@
-export const BACKEND_URL = env.BACKEND_URL;
+import axios from "axios";
+
+export const axiosInstance = axios.create({
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}`,
+  withCredentials: true,
+});
+
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
