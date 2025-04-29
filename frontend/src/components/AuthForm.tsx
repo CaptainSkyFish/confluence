@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../config";
 import { useToast } from "./ToastProvider";
+import { BACKEND_URL } from "../config/backendUrl";
 
 type AuthMode = "signin" | "signup";
 

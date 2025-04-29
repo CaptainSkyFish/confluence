@@ -1,4 +1,3 @@
-// src/components/Sidebar.tsx
 import React from "react";
 import useGetAllRooms from "../hooks/useGetAllRooms";
 import RoomList from "./RoomList";
@@ -8,7 +7,7 @@ const Sidebar: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div>
+      <div className="col-span-2">
         <h2 className="font-krylon text-xl font-extralight">Rooms</h2>
         <div className="">
           <div className="rounded-xl p-1 w-[90%] animate-gradient hover:bg-gradient-to-r from-[#4136c3] via-[#FBC7D4] to-[#9796F0] opacity-90 items-center">
@@ -27,14 +26,10 @@ const Sidebar: React.FC = () => {
   }
 
   if (error) {
-    return <div>Error loading rooms</div>;
+    return <div className="text-red-800 col-span-1">Error loading rooms</div>;
   }
 
-  return (
-    <div>
-      <RoomList rooms={data || []} />
-    </div>
-  );
+  return <RoomList rooms={data || []} />;
 };
 
 export default Sidebar;

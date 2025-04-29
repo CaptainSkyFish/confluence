@@ -4,9 +4,9 @@ import Sidebar from "../components/Sidebar";
 
 const Inbox = () => {
   return (
-    <div className="fixed inset-0 bg-[black] backdrop-blur-3xl">
-      <div className="grid grid-cols-4 items-center">
-        <div className="col-span-1 mx-2 h-screen w-full text-slate-100">
+    <div className="fixed inset-0 bg-[#0f0f0f] backdrop-blur-3xl">
+      <div className="col-span-1 mx-2 h-screen w-full text-slate-100">
+        <div className="flex justify-between items-center">
           <div className="">
             <Link
               to="/"
@@ -15,9 +15,21 @@ const Inbox = () => {
               Confluence
             </Link>
           </div>
-          <Sidebar />
+          <div className="flex items-center p-4">
+            {/* User Profile */}
+            <div className="relative group cursor-pointer">
+              <div className="w-10 h-10 rounded-full bg-slate-400"></div>{" "}
+              {/* Profile Picture */}
+              <div className="absolute top-1/2 -translate-y-1/2 right-12 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ease-in-out bg-slate-800 px-3 py-1 rounded-lg text-white text-sm">
+                Username
+              </div>
+            </div>
+          </div>
         </div>
-        <Chatbox />
+        <div className="grid grid-cols-12">
+          <Sidebar />
+          <Chatbox />
+        </div>
       </div>
     </div>
   );

@@ -5,4 +5,4 @@ export const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
