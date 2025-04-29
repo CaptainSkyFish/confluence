@@ -4,7 +4,6 @@ import AttachmentsIcon from "../utils/AttachmentsIcon";
 
 export default function ChatInput() {
   const [focused, setFocused] = useState(false);
-  const [showAdd, setShowAdd] = useState(false);
 
   return (
     <div className="w-full mb-22 px-4 py-2 bg-transparent">
@@ -14,10 +13,7 @@ export default function ChatInput() {
         } mx-auto`}
       >
         {focused && (
-          <button
-            onClick={() => setShowAdd((prev) => !prev)}
-            className="mr-2 text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition"
-          >
+          <button className="mr-2 text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition">
             <AttachmentsIcon />
           </button>
         )}
