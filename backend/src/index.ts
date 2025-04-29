@@ -1,29 +1,30 @@
-import userRoutes from "./routes/userRoutes"
-import roomRoutes from "./routes/roomRoutes"
-import messageRoutes from "./routes/messageRoutes"
-import express from "express"
-import cookieParser from "cookie-parser"
-import cors from "cors"
+import userRoutes from "./routes/userRoutes";
+import roomRoutes from "./routes/roomRoutes";
+import messageRoutes from "./routes/messageRoutes";
+import express from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import { setupWebSocketServer } from "./sockets/socketServer";
+import http from "http";
 
-const app = express()
+const app = express();
 
-app.use(cookieParser())
-app.use(express.json())
+app.use(cookieParser());
+app.use(express.json());
 
-const PORT = process.env.PORT || 3000
+const server = http.createServer(app);
+setupWebSocketServer(server);
 
-app.listen(PORT, () => {
-  console.log(`server running on http://localhost:${PORT}`)
-})
+app.use("/api/v1/rooms", roomRoutes);
 
-app.use("/api/v1/rooms", roomRoutes)
+app.use("/api/v1/users", userRoutes);
 
-app.use("/api/v1/users", userRoutes)
+app.use("api/v1/messages", messageRoutes);
 
-app.use("api/v1/messages", messageRoutes)
-
-
-const allowedOrigins = ["http://localhost:5173","https://confluence-theta.vercel.app/"]; 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://confluence-theta.vercel.app/",
+];
 
 app.use(
   cors({
@@ -35,6 +36,11 @@ app.use(
       }
     },
     credentials: true,
-  })
+  }),
 );
 
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`server running on http://localhost:${PORT}`);
+});

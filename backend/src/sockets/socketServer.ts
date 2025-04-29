@@ -1,23 +1,52 @@
-//import { WebSocket, WebSocketServer } from "ws"
-//const wss = new WebSocketServer({ port: 2025 })
-//
-//let users = 0
-//let allSockets: WebSocket[] = []
-//
-//wss.on("connection", (socket) => {
-//  allSockets.push(socket)
-//  ++users
-//  console.log("user #" + users + "connected.")
-//
-//  socket.on("message", (message) => {
-//    allSockets.forEach(s => {
-//      s.send(message.toString())
-//    })
-//  })
-//
-//  socket.on("disconnect", () => {
-//    allSockets = allSockets.filter(x => x != socket)
-//  })
-//
-//
-//})
+import { RawData, WebSocket, WebSocketServer } from "ws";
+import type { IncomingMessage, Server } from "http";
+import url from "url";
+
+type RoomId = string;
+
+const rooms = new Map<RoomId, Set<WebSocket>>();
+
+export const setupWebSocketServer = (server: Server) => {
+  const wss = new WebSocketServer({ noServer: true });
+
+  server.on("upgrade", (request, socket, head) => {
+    const { pathname, query } = url.parse(request.url || "", true);
+    const roomId = query.roomId as string;
+
+    if (pathname === "/ws" && roomId) {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit("connection", ws, request, roomId);
+      });
+    } else {
+      socket.destroy();
+    }
+  });
+
+  wss.on(
+    "connection",
+    (ws: WebSocket, req: IncomingMessage, roomId: RoomId) => {
+      if (!(typeof roomId === "string")) {
+        ws.close();
+        return;
+      }
+      console.log(`Client connected to room ${roomId}`);
+
+      if (!rooms.has(roomId)) rooms.set(roomId, new Set());
+      rooms.get(roomId)!.add(ws);
+
+      ws.on("message", (msg: RawData) => {
+        console.log(`Message in room ${roomId}:`, msg.toString());
+
+        wss.clients.forEach((client) => {
+          if (client !== ws && client.readyState === ws.OPEN)
+            client.send(msg.toString());
+        });
+      });
+
+      ws.on("close", () => {
+        rooms.get(roomId)?.delete(ws);
+        console.log(`Client disconnected from room ${roomId}`);
+      });
+    },
+  );
+};

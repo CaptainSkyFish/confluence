@@ -19,17 +19,19 @@ model User {
   rooms          Room[]            @relation("Membership")
   createdRooms   Room[]            @relation("Creator")
   isDeleted      Boolean           @default(false)
+  profilePicture String?
 }
 
 model Room {
-  id          String    @id @default(cuid())
-  roomName    String
-  description String
-  createdAt   DateTime  @default(now())
-  messages    Message[]
-  users       User[]    @relation("Membership")
-  createdById String
-  createdBy   User      @relation("Creator", fields: [createdById], references: [id])
+  id             String    @id @default(cuid())
+  roomName       String
+  description    String
+  createdAt      DateTime  @default(now())
+  messages       Message[]
+  users          User[]    @relation("Membership")
+  createdById    String
+  createdBy      User      @relation("Creator", fields: [createdById], references: [id])
+  profilePicture String?
 }
 
 model Message {
