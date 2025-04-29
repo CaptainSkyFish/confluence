@@ -10,7 +10,7 @@ const Inbox = () => {
           <div className="">
             <Link
               to="/"
-              className="font-extrabold fade-up font-casselin text-3xl bg-gradient-to-r from-[#9796F0] to-[#FBC7D4] bg-clip-text text-transparent"
+              className="font-extrabold fade-up ml-3 font-casselin text-3xl bg-gradient-to-r from-[#9796F0] to-[#FBC7D4] bg-clip-text text-transparent"
             >
               Confluence
             </Link>
@@ -26,7 +26,7 @@ const Inbox = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-12">
+        <div className="grid grid-cols-12 min-w-screen min-h-screen">
           <Sidebar />
           <Chatbox />
         </div>

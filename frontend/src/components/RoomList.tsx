@@ -16,9 +16,9 @@ const RoomList: React.FC<RoomListProps> = ({ rooms }) => {
   const setSelectedRoom = useRoomStore((state) => state.setSelectedRoom);
 
   return (
-    <div className="col-span-2">
-      <h2 className="font-krylon text-xl font-extralight">Rooms</h2>
-      <div className="">
+    <div className="col-span-3 md:col-span-2 ml-3">
+      <h2 className="font-krylon text-xl  font-extralight">Rooms</h2>
+      <div className="border-l border-white/10 text-white/70">
         {rooms.map((room) => {
           const isSelected = selectedRoom?.id === room.id;
 
@@ -26,23 +26,22 @@ const RoomList: React.FC<RoomListProps> = ({ rooms }) => {
             <div
               key={room.id}
               onClick={() => setSelectedRoom(room)}
-              className={`relative rounded-xl p-1 w-[90%] transition-all duration-300 ease-in-out m-1 cursor-pointer 
+              className={`relative group pl-0 ml-0 p-1 w-[90%] m-1 cursor-pointer 
                 ${
                   isSelected
-                    ? "bg-[#FBC7D4]/30 backdrop-blur-lg backdrop-brightness-75"
-                    : "hover:bg-[#FBC7D4]/15 hover:backdrop-blur-lg hover:backdrop-brightness-50 hover:backdrop-filter"
+                    ? "bg-purple-100/5 border-l-white/50 transition-all duration-200 text-white rounded-xl border-l-2 backdrop-blur-lg backdrop-brightness-75"
+                    : "hover:rounded-none hover:border-l-2 hover:text-white"
                 }`}
             >
               {" "}
-              <div className="rounded-xl p-1 mr-auto">
-                <div className="rounded-xl m-1 w-fit text-white">
+              <div className="rounded-xl p-1 pl-3 mr-auto">
+                <div className="rounded-xl m-1 ml-0 w-fit group-hover:underline ">
                   {room.roomName}
                 </div>
-                <div className="m-1 rounded-xl text-xs w-4/5 text-white/50">
+                <div className="m-1  md:block hidden rounded-xl text-xs w-4/5 text-white/50">
                   {room.description}
                 </div>
               </div>
-              <div className="absolute rounded-xl inset-0 bg-cover bg-no-repeat bg-center bg-[url('/textures/cardboard-texture.jpg')] opacity-0 transition-opacity ease-in-out duration-300 hover:opacity-30"></div>
             </div>
           );
         })}
