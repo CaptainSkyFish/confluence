@@ -1,6 +1,6 @@
 import { Request, RequestHandler, Response } from "express"
 import prisma from "../../config/prisma"
-import * as argon2 from "argon2"
+import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken"
 
 const JWT_SECRET = process.env.JWT_SECRET
@@ -16,7 +16,8 @@ const signupHandler: RequestHandler = async (req: Request , res: Response ) => {
       res.status(400).json({errMes: "Missing required fields"})
       return
     }
-    const hashedPassword = await argon2.hash(password) 
+    // const hashedPassword = await argon2.hash(password)
+    const hashedPassword = await bcrypt.hash(password, 12) 
     if(!bio) {
       bio = `Hey there, I'm ${username}`
     }

@@ -1,6 +1,6 @@
 import { Request, RequestHandler, Response } from "express"
 import prisma from "../../config/prisma"
-import * as argon2 from "argon2"
+import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken"
 
 const JWT_SECRET = process.env.JWT_SECRET
@@ -15,7 +15,8 @@ const signinHandler: RequestHandler = async(req: Request, res: Response) => {
 
   const user = await prisma.user.findFirst({where: {username}})
   if(user){
-    if(await argon2.verify(user.password, password)){
+// if(await argon2.verify(user.password, password)){
+    if(await bcrypt.compare(user.password, password)){
       const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET!)
       res.cookie("jwt", token, {
         httpOnly: true,
