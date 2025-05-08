@@ -1,2 +1,2 @@
 [config]
-SCM_BUILD_ARGS=--production
+SCM_DO_BUILD_DURING_DEPLOYMENT=true
