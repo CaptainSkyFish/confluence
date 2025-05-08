@@ -41,8 +41,6 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-    environment:
-      name: 'Production'
          689eabf7e81b19f57f7cf148cff7fc27aa51dc75
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     
@@ -59,6 +57,5 @@ jobs:
           app-name: 'confluence-be2'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_241f7ad3bc3a44269bc30e2b8098f43b }}
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5CA71E29973740EA8DCA93BB004A61BC }}
+         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5CA71E29973740EA8DCA93BB004A61BC }}
              689eabf7e81b19f57f7cf148cff7fc27aa51dc75
