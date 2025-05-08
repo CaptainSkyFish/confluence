@@ -5,6 +5,7 @@ import AttachmentsIcon from "../utils/AttachmentsIcon";
 export default function ChatInput() {
   const [focused, setFocused] = useState(false);
 
+
   return (
     <div className="w-full mb-22 px-4 py-2 bg-transparent">
       <div

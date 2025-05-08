@@ -1,5 +1,6 @@
 import React from "react";
 import useRoomStore from "../store/useRoomStore";
+import { connectToRoom, disconnect } from "../config/socket";
 
 type Room = {
   id: string;
@@ -25,7 +26,13 @@ const RoomList: React.FC<RoomListProps> = ({ rooms }) => {
           return (
             <div
               key={room.id}
-              onClick={() => setSelectedRoom(room)}
+              onClick={() => {
+                if (selectedRoom?.id !== room.id) {
+                  disconnect();
+                  setSelectedRoom(room);
+                  connectToRoom(room.id);
+                }
+              }}
               className={`relative group pl-0 ml-0 p-1 w-[90%] m-1 cursor-pointer 
                 ${
                   isSelected

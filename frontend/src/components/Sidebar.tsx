@@ -31,7 +31,12 @@ const Sidebar: React.FC = () => {
   }
 
   if (error) {
-    return <div className="text-red-800 col-span-1">Error loading rooms</div>;
+    return (
+      <div className="col-span-3 md:col-span-2 ml-3">
+        <h2 className="font-krylon text-xl font-extralight">Rooms</h2>
+        <div className="text-red-800 max-w-fit">Error loading rooms</div>
+      </div>
+    );
   }
 
   return <RoomList rooms={data || []} />;
