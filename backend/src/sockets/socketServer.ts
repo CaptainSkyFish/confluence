@@ -22,6 +22,7 @@ export const setupWebSocketServer = (server: Server) => {
     }
   });
 
+
   wss.on(
     "connection",
     (ws: WebSocket, req: IncomingMessage, roomId: RoomId) => {
