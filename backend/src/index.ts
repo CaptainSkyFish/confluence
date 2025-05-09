@@ -37,7 +37,7 @@ app.use("/api/v1/rooms", roomRoutes);
 
 app.use("/api/v1/users", userRoutes);
 
-app.use("api/v1/messages", messageRoutes);
+app.use("/api/v1/messages", messageRoutes);
 
 const PORT = process.env.PORT || 3000;
 
