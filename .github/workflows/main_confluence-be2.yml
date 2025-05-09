@@ -27,12 +27,12 @@ jobs:
         with:
           node-version: '22.x'
 
-     - name: Install dependencies, generate Prisma, and build
+      - name: Install dependencies, generate Prisma, and build
        working-directory: ./backend
        run: |
           npm ci
           npx prisma generate
-          ls -la node_modules/.prisma/client # Check it worked
+          ls -la node_modules/.prisma/client 
           npm run build
           npm run test --if-present
       
