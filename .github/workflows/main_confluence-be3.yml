@@ -5,6 +5,9 @@ name: Build and deploy Node.js app to Azure Web App - confluence-be3
 
 on:
   push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/main_confluence-be3.yml'
     branches:
       - main
   workflow_dispatch:
