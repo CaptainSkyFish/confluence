@@ -9,18 +9,6 @@ import http from "http";
 
 const app = express();
 
-app.use(cookieParser());
-app.use(express.json());
-
-const server = http.createServer(app);
-setupWebSocketServer(server);
-
-app.use("/api/v1/rooms", roomRoutes);
-
-app.use("/api/v1/users", userRoutes);
-
-app.use("api/v1/messages", messageRoutes);
-
 const allowedOrigins = [
   "http://localhost:5173",
   "https://confluence-theta.vercel.app/",
@@ -38,6 +26,18 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use(cookieParser());
+app.use(express.json());
+
+const server = http.createServer(app);
+setupWebSocketServer(server);
+
+app.use("/api/v1/rooms", roomRoutes);
+
+app.use("/api/v1/users", userRoutes);
+
+app.use("api/v1/messages", messageRoutes);
 
 const PORT = process.env.PORT || 3000;
 
