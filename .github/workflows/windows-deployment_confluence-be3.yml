@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - confluence-be3
+name: Build and deploy Node.js app to Azure Web App - confluence-be4
 
 on:
   push:
@@ -57,7 +57,7 @@ jobs:
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'confluence-be3'
+          app-name: 'confluence-be4'
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D39E54D88C8442DE989AB62B1C6CD05C }}
