@@ -50,7 +50,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "/home/skyfish/Projects/confluence/backend/src/generated/prisma",
+      "value": "J:\\Code\\Projects\\confluence\\backend\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -63,7 +63,7 @@ const config: runtime.GetPrismaClientConfig = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/skyfish/Projects/confluence/backend/prisma/schema.prisma",
+    "sourceFilePath": "J:\\Code\\Projects\\confluence\\backend\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../../prisma",
