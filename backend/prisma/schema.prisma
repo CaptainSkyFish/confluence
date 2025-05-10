@@ -1,8 +1,8 @@
 generator client {
-  provider = "prisma-client"
-  binaryTargets = ["windows"]
-  engineType = "binary"
-  output = "../src/generated/prisma"
+  provider      = "prisma-client"
+  binaryTargets = ["windows-ia32"]
+  engineType    = "binary"
+  output        = "../src/generated/prisma"
 }
 
 datasource db {
