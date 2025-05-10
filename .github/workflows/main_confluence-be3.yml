@@ -30,12 +30,12 @@ jobs:
         working-directory: ./backend
         run: |
           npm ci
-          npx prisma generate --binary-target windows
-          Get-ChildItem node_modules/.prisma/client -Force
-          npm run build --if-present
-          mkdir deploy
+          npx prisma generate
+          npm run build
+          mkdir -p deploy
           cp -r node_modules deploy/
           cp -r dist deploy/
+          cp src/generated/prisma/query-engine-windows.exe deploy/dist/generated/
           cp package.json deploy/
           cp package-lock.json deploy/
           cp .deployment deploy/

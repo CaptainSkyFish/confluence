@@ -1,5 +1,8 @@
 node_modules
-/src/generated/prisma
+src/generated/prisma/*
+# Except binary-windows.exe
+!src/generated/prisma/query-engine-windows.exe
 .prettierrc.json
 dist
 .env
+deploy
