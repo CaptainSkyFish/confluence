@@ -1,3 +1,5 @@
+import dotenv from "dotenv"
+dotenv.config()
 import userRoutes from "./routes/userRoutes";
 import roomRoutes from "./routes/roomRoutes";
 import messageRoutes from "./routes/messageRoutes";
@@ -32,6 +34,10 @@ app.use(express.json());
 
 const server = http.createServer(app);
 setupWebSocketServer(server);
+
+app.get("/api/health", (_, res) => {
+  res.send("OK");
+});
 
 app.use("/api/v1/rooms", roomRoutes);
 

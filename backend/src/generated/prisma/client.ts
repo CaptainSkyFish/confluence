@@ -1,69 +1,127 @@
 
 /**
  * Client
-**/
+ */
 
-import * as runtime from './runtime/binary.js';
-import $Types = runtime.Types // general types
-import $Public = runtime.Types.Public
-import $Utils = runtime.Types.Utils
-import $Extensions = runtime.Types.Extensions
-import $Result = runtime.Types.Result
+import * as runtime from '@prisma/client/runtime/binary'
+import * as process from 'node:process'
+import * as path from 'node:path'
 
-export type PrismaPromise<T> = $Public.PrismaPromise<T>
+
+export type PrismaPromise<T> = runtime.Types.Public.PrismaPromise<T>
 
 
 /**
  * Model User
  * 
  */
-export type User = $Result.DefaultSelection<Prisma.$UserPayload>
+export type User = runtime.Types.Result.DefaultSelection<Prisma.$UserPayload>
 /**
  * Model Room
  * 
  */
-export type Room = $Result.DefaultSelection<Prisma.$RoomPayload>
+export type Room = runtime.Types.Result.DefaultSelection<Prisma.$RoomPayload>
 /**
  * Model Message
  * 
  */
-export type Message = $Result.DefaultSelection<Prisma.$MessagePayload>
+export type Message = runtime.Types.Result.DefaultSelection<Prisma.$MessagePayload>
 /**
  * Model MessageView
  * 
  */
-export type MessageView = $Result.DefaultSelection<Prisma.$MessageViewPayload>
+export type MessageView = runtime.Types.Result.DefaultSelection<Prisma.$MessageViewPayload>
 /**
  * Model MessageReaction
  * 
  */
-export type MessageReaction = $Result.DefaultSelection<Prisma.$MessageReactionPayload>
+export type MessageReaction = runtime.Types.Result.DefaultSelection<Prisma.$MessageReactionPayload>
+
+
 
 /**
- * ##  Prisma Client ʲˢ
- *
- * Type-safe database client for TypeScript & Node.js
- * @example
- * ```
- * const prisma = new PrismaClient()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
- * ```
- *
- *
- * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+ * Create the Client
  */
-export class PrismaClient<
-  ClientOptions extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions,
-  U = 'log' extends keyof ClientOptions ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never : never,
-  ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-> {
-  [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] }
+const config: runtime.GetPrismaClientConfig = {
+  "generator": {
+    "name": "client",
+    "provider": {
+      "fromEnvVar": null,
+      "value": "prisma-client"
+    },
+    "output": {
+      "value": "/home/skyfish/Projects/confluence/backend/src/generated/prisma",
+      "fromEnvVar": null
+    },
+    "config": {
+      "engineType": "binary"
+    },
+    "binaryTargets": [
+      {
+        "fromEnvVar": null,
+        "value": "windows"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x",
+        "native": true
+      }
+    ],
+    "previewFeatures": [],
+    "sourceFilePath": "/home/skyfish/Projects/confluence/backend/prisma/schema.prisma",
+    "isCustomOutput": true
+  },
+  "relativePath": "../../../prisma",
+  "clientVersion": "6.6.0",
+  "engineVersion": "f676762280b54cd07c770017ed3711ddde35f37a",
+  "datasourceNames": [
+    "db"
+  ],
+  "activeProvider": "postgresql",
+  "postinstall": false,
+  "inlineDatasources": {
+    "db": {
+      "url": {
+        "fromEnvVar": "DATABASE_URL",
+        "value": null
+      }
+    }
+  },
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client\"\n  binaryTargets = [\"windows\", \"native\"]\n  engineType    = \"binary\"\n  output        = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id             String            @id @default(uuid())\n  username       String            @unique\n  password       String\n  messages       Message[]\n  reactions      MessageReaction[]\n  viewedMessages MessageView[]\n  bio            String\n  rooms          Room[]            @relation(\"Membership\")\n  createdRooms   Room[]            @relation(\"Creator\")\n  isDeleted      Boolean           @default(false)\n  profilePicture String?\n}\n\nmodel Room {\n  id             String    @id @default(cuid())\n  roomName       String\n  description    String\n  createdAt      DateTime  @default(now())\n  messages       Message[]\n  users          User[]    @relation(\"Membership\")\n  createdById    String\n  createdBy      User      @relation(\"Creator\", fields: [createdById], references: [id])\n  profilePicture String?\n}\n\nmodel Message {\n  id        String            @id @default(uuid())\n  content   String\n  mediaUrl  String?\n  senderId  String\n  roomId    String\n  timestamp DateTime          @default(now())\n  replyToId String?\n  replyTo   Message?          @relation(\"MessageReplies\", fields: [replyToId], references: [id])\n  replies   Message[]         @relation(\"MessageReplies\")\n  room      Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)\n  sender    User              @relation(fields: [senderId], references: [id])\n  reactions MessageReaction[]\n  views     MessageView[]\n}\n\nmodel MessageView {\n  id        String   @id @default(uuid())\n  messageId String\n  userId    String\n  viewedAt  DateTime @default(now())\n  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([messageId, userId])\n}\n\nmodel MessageReaction {\n  id        String  @id @default(uuid())\n  messageId String\n  userId    String\n  type      String\n  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)\n  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, messageId, type])\n}\n",
+  "inlineSchemaHash": "bf8e472c3c53128257688e931d2c8018c52efef627a9487c973eb4b1c121a986",
+  "copyEngine": true,
+  "runtimeDataModel": {
+    "models": {},
+    "enums": {},
+    "types": {}
+  },
+  "dirname": ""
+}
+config.dirname = __dirname
 
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"username\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"password\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"messages\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Message\",\"nativeType\":null,\"relationName\":\"MessageToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"reactions\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"MessageReaction\",\"nativeType\":null,\"relationName\":\"MessageReactionToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"viewedMessages\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"MessageView\",\"nativeType\":null,\"relationName\":\"MessageViewToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"bio\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"rooms\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Room\",\"nativeType\":null,\"relationName\":\"Membership\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdRooms\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Room\",\"nativeType\":null,\"relationName\":\"Creator\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"isDeleted\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Boolean\",\"nativeType\":null,\"default\":false,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"profilePicture\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Room\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"cuid\",\"args\":[1]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"roomName\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"description\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"messages\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Message\",\"nativeType\":null,\"relationName\":\"MessageToRoom\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"users\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"Membership\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdById\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdBy\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"Creator\",\"relationFromFields\":[\"createdById\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"profilePicture\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Message\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"content\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"mediaUrl\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"senderId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"roomId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"replyToId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"replyTo\",\"kind\":\"object\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Message\",\"nativeType\":null,\"relationName\":\"MessageReplies\",\"relationFromFields\":[\"replyToId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"replies\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Message\",\"nativeType\":null,\"relationName\":\"MessageReplies\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"room\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Room\",\"nativeType\":null,\"relationName\":\"MessageToRoom\",\"relationFromFields\":[\"roomId\"],\"relationToFields\":[\"id\"],\"relationOnDelete\":\"Cascade\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"sender\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"MessageToUser\",\"relationFromFields\":[\"senderId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"reactions\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"MessageReaction\",\"nativeType\":null,\"relationName\":\"MessageToMessageReaction\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"views\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"MessageView\",\"nativeType\":null,\"relationName\":\"MessageToMessageView\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"MessageView\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"messageId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"viewedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"message\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Message\",\"nativeType\":null,\"relationName\":\"MessageToMessageView\",\"relationFromFields\":[\"messageId\"],\"relationToFields\":[\"id\"],\"relationOnDelete\":\"Cascade\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"user\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"MessageViewToUser\",\"relationFromFields\":[\"userId\"],\"relationToFields\":[\"id\"],\"relationOnDelete\":\"Cascade\",\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[[\"messageId\",\"userId\"]],\"uniqueIndexes\":[{\"name\":null,\"fields\":[\"messageId\",\"userId\"]}],\"isGenerated\":false},\"MessageReaction\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"messageId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"type\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"message\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Message\",\"nativeType\":null,\"relationName\":\"MessageToMessageReaction\",\"relationFromFields\":[\"messageId\"],\"relationToFields\":[\"id\"],\"relationOnDelete\":\"Cascade\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"user\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"MessageReactionToUser\",\"relationFromFields\":[\"userId\"],\"relationToFields\":[\"id\"],\"relationOnDelete\":\"Cascade\",\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[[\"userId\",\"messageId\",\"type\"]],\"uniqueIndexes\":[{\"name\":null,\"fields\":[\"userId\",\"messageId\",\"type\"]}],\"isGenerated\":false}},\"enums\":{},\"types\":{}}")
+config.engineWasm = undefined
+config.compilerWasm = undefined
+
+
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "query-engine-windows")
+path.join(process.cwd(), "src/generated/prisma/query-engine-windows")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "query-engine-debian-openssl-3.0.x")
+path.join(process.cwd(), "src/generated/prisma/query-engine-debian-openssl-3.0.x")
+// file annotations for bundling tools to include these files
+path.join(__dirname, "schema.prisma")
+path.join(process.cwd(), "src/generated/prisma/schema.prisma")
+
+
+interface PrismaClientConstructor {
     /**
-   * ##  Prisma Client ʲˢ
+   * ## Prisma Client
    *
-   * Type-safe database client for TypeScript & Node.js
+   * Type-safe database client for TypeScript
    * @example
    * ```
    * const prisma = new PrismaClient()
@@ -71,22 +129,46 @@ export class PrismaClient<
    * const users = await prisma.user.findMany()
    * ```
    *
-   *
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
    */
+  new <
+    ClientOptions extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions,
+    U = 'log' extends keyof ClientOptions ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never : never,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs
+  >(options?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>): PrismaClient<ClientOptions, U, ExtArgs>
+}
 
-  constructor(optionsArg ?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>);
-  $on<V extends (U | 'beforeExit')>(eventType: V, callback: (event: V extends 'query' ? Prisma.QueryEvent : V extends 'beforeExit' ? () => $Utils.JsPromise<void> : Prisma.LogEvent) => void): PrismaClient;
+/**
+ * ## Prisma Client
+ *
+ * Type-safe database client for TypeScript
+ * @example
+ * ```
+ * const prisma = new PrismaClient()
+ * // Fetch zero or more Users
+ * const users = await prisma.user.findMany()
+ * ```
+ *
+ * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+ */
+export interface PrismaClient<
+  ClientOptions extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions,
+  U = 'log' extends keyof ClientOptions ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never : never,
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs
+> {
+  [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] }
+
+  $on<V extends (U | 'beforeExit')>(eventType: V, callback: (event: V extends 'query' ? Prisma.QueryEvent : V extends 'beforeExit' ? () => runtime.Types.Utils.JsPromise<void> : Prisma.LogEvent) => void): PrismaClient;
 
   /**
    * Connect with the database
    */
-  $connect(): $Utils.JsPromise<void>;
+  $connect(): runtime.Types.Utils.JsPromise<void>;
 
   /**
    * Disconnect from the database
    */
-  $disconnect(): $Utils.JsPromise<void>;
+  $disconnect(): runtime.Types.Utils.JsPromise<void>;
 
   /**
    * Add a middleware
@@ -155,12 +237,12 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
+  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
 
-  $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => $Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<R>
+  $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => runtime.Types.Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<R>
 
 
-  $extends: $Extensions.ExtendsHook<"extends", Prisma.TypeMapCb<ClientOptions>, ExtArgs, $Utils.Call<Prisma.TypeMapCb<ClientOptions>, {
+  $extends: runtime.Types.Extensions.ExtendsHook<"extends", Prisma.TypeMapCb<ClientOptions>, ExtArgs, runtime.Types.Utils.Call<Prisma.TypeMapCb<ClientOptions>, {
     extArgs: ExtArgs
   }>>
 
@@ -215,40 +297,54 @@ export class PrismaClient<
   get messageReaction(): Prisma.MessageReactionDelegate<ExtArgs, ClientOptions>;
 }
 
-export namespace Prisma {
-  export import DMMF = runtime.DMMF
+export const PrismaClient = runtime.getPrismaClient(config) as unknown as PrismaClientConstructor
 
-  export type PrismaPromise<T> = $Public.PrismaPromise<T>
+export namespace Prisma {
+  export type DMMF = typeof runtime.DMMF
+
+  export type PrismaPromise<T> = runtime.Types.Public.PrismaPromise<T>
 
   /**
    * Validator
    */
-  export import validator = runtime.Public.validator
+  export const validator = runtime.Public.validator
 
   /**
    * Prisma Errors
    */
-  export import PrismaClientKnownRequestError = runtime.PrismaClientKnownRequestError
-  export import PrismaClientUnknownRequestError = runtime.PrismaClientUnknownRequestError
-  export import PrismaClientRustPanicError = runtime.PrismaClientRustPanicError
-  export import PrismaClientInitializationError = runtime.PrismaClientInitializationError
-  export import PrismaClientValidationError = runtime.PrismaClientValidationError
+
+  export const PrismaClientKnownRequestError = runtime.PrismaClientKnownRequestError
+  export type PrismaClientKnownRequestError = runtime.PrismaClientKnownRequestError
+
+  export const PrismaClientUnknownRequestError = runtime.PrismaClientUnknownRequestError
+  export type PrismaClientUnknownRequestError = runtime.PrismaClientUnknownRequestError
+
+  export const PrismaClientRustPanicError = runtime.PrismaClientRustPanicError
+  export type PrismaClientRustPanicError = runtime.PrismaClientRustPanicError
+
+  export const PrismaClientInitializationError = runtime.PrismaClientInitializationError
+  export type PrismaClientInitializationError = runtime.PrismaClientInitializationError
+
+  export const PrismaClientValidationError = runtime.PrismaClientValidationError
+  export type PrismaClientValidationError = runtime.PrismaClientValidationError
 
   /**
    * Re-export of sql-template-tag
    */
-  export import sql = runtime.sqltag
-  export import empty = runtime.empty
-  export import join = runtime.join
-  export import raw = runtime.raw
-  export import Sql = runtime.Sql
+  export const sql = runtime.sqltag
+  export const empty = runtime.empty
+  export const join = runtime.join
+  export const raw = runtime.raw
+  export const Sql = runtime.Sql
+  export type Sql = runtime.Sql
 
 
 
   /**
    * Decimal.js
    */
-  export import Decimal = runtime.Decimal
+  export const Decimal = runtime.Decimal
+  export type Decimal = runtime.Decimal
 
   export type DecimalJsLike = runtime.DecimalJsLike
 
@@ -263,76 +359,43 @@ export namespace Prisma {
   /**
   * Extensions
   */
-  export import Extension = $Extensions.UserArgs
-  export import getExtensionContext = runtime.Extensions.getExtensionContext
-  export import Args = $Public.Args
-  export import Payload = $Public.Payload
-  export import Result = $Public.Result
-  export import Exact = $Public.Exact
+  export type Extension = runtime.Types.Extensions.UserArgs
+  export const getExtensionContext = runtime.Extensions.getExtensionContext
+  export type Args<T, F extends runtime.Operation> = runtime.Types.Public.Args<T, F>
+  export type Payload<T, F extends runtime.Operation = never> = runtime.Types.Public.Payload<T, F>
+  export type Result<T, A, F extends runtime.Operation> = runtime.Types.Public.Result<T, A, F>
+  export type Exact<A, W> = runtime.Types.Public.Exact<A, W>
+
+  export type PrismaVersion = {
+    client: string
+    engine: string
+  }
 
   /**
    * Prisma Client JS version: 6.6.0
    * Query Engine version: f676762280b54cd07c770017ed3711ddde35f37a
    */
-  export type PrismaVersion = {
-    client: string
+  export const prismaVersion: PrismaVersion = {
+    client: "6.6.0",
+    engine: "f676762280b54cd07c770017ed3711ddde35f37a"
   }
-
-  export const prismaVersion: PrismaVersion
 
   /**
    * Utility Types
    */
 
 
-  export import JsonObject = runtime.JsonObject
-  export import JsonArray = runtime.JsonArray
-  export import JsonValue = runtime.JsonValue
-  export import InputJsonObject = runtime.InputJsonObject
-  export import InputJsonArray = runtime.InputJsonArray
-  export import InputJsonValue = runtime.InputJsonValue
+  export type JsonObject = runtime.JsonObject
+  export type JsonArray = runtime.JsonArray
+  export type JsonValue = runtime.JsonValue
+  export type InputJsonObject = runtime.InputJsonObject
+  export type InputJsonArray = runtime.InputJsonArray
+  export type InputJsonValue = runtime.InputJsonValue
 
-  /**
-   * Types of the values used to represent different kinds of `null` values when working with JSON fields.
-   *
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
-   */
-  namespace NullTypes {
-    /**
-    * Type of `Prisma.DbNull`.
-    *
-    * You cannot use other instances of this class. Please use the `Prisma.DbNull` value.
-    *
-    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
-    */
-    class DbNull {
-      private DbNull: never
-      private constructor()
-    }
-
-    /**
-    * Type of `Prisma.JsonNull`.
-    *
-    * You cannot use other instances of this class. Please use the `Prisma.JsonNull` value.
-    *
-    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
-    */
-    class JsonNull {
-      private JsonNull: never
-      private constructor()
-    }
-
-    /**
-    * Type of `Prisma.AnyNull`.
-    *
-    * You cannot use other instances of this class. Please use the `Prisma.AnyNull` value.
-    *
-    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
-    */
-    class AnyNull {
-      private AnyNull: never
-      private constructor()
-    }
+  export const NullTypes = {
+    DbNull: runtime.objectEnumValues.classes.DbNull as (new (secret: never) => typeof runtime.objectEnumValues.instances.DbNull),
+    JsonNull: runtime.objectEnumValues.classes.JsonNull as (new (secret: never) => typeof runtime.objectEnumValues.instances.JsonNull),
+    AnyNull: runtime.objectEnumValues.classes.AnyNull as (new (secret: never) => typeof runtime.objectEnumValues.instances.AnyNull),
   }
 
   /**
@@ -340,21 +403,21 @@ export namespace Prisma {
    *
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
    */
-  export const DbNull: NullTypes.DbNull
+  export const DbNull = runtime.objectEnumValues.instances.DbNull
 
   /**
    * Helper for filtering JSON entries that have JSON `null` values (not empty on the db)
    *
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
    */
-  export const JsonNull: NullTypes.JsonNull
+  export const JsonNull = runtime.objectEnumValues.instances.JsonNull
 
   /**
    * Helper for filtering JSON entries that are `Prisma.DbNull` or `Prisma.JsonNull`
    *
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
    */
-  export const AnyNull: NullTypes.AnyNull
+  export const AnyNull = runtime.objectEnumValues.instances.AnyNull
 
   type SelectAndInclude = {
     select: any
@@ -367,34 +430,13 @@ export namespace Prisma {
   }
 
   /**
-   * Get the type of the value, that the Promise holds.
-   */
-  export type PromiseType<T extends PromiseLike<any>> = T extends PromiseLike<infer U> ? U : T;
-
-  /**
-   * Get the return type of a function which returns a Promise.
-   */
-  export type PromiseReturnType<T extends (...args: any) => $Utils.JsPromise<any>> = PromiseType<ReturnType<T>>
-
-  /**
    * From T, pick a set of properties whose keys are in the union K
    */
   type Prisma__Pick<T, K extends keyof T> = {
       [P in K]: T[P];
   };
 
-
   export type Enumerable<T> = T | Array<T>;
-
-  export type RequiredKeys<T> = {
-    [K in keyof T]-?: {} extends Prisma__Pick<T, K> ? never : K
-  }[keyof T]
-
-  export type TruthyKeys<T> = keyof {
-    [K in keyof T as T[K] extends false | undefined | null ? never : K]: K
-  }
-
-  export type TrueKeys<T> = TruthyKeys<Prisma__Pick<T, RequiredKeys<T>>>
 
   /**
    * Subset
@@ -512,7 +554,6 @@ export namespace Prisma {
   }>>;
 
   type Key = string | number | symbol;
-  type AtBasic<O extends object, K extends Key> = K extends keyof O ? O[K] : never;
   type AtStrict<O extends object, K extends Key> = O[K & keyof O];
   type AtLoose<O extends object, K extends Key> = O extends unknown ? AtStrict<O, K> : never;
   export type At<O extends object, K extends Key, strict extends Boolean = 1> = {
@@ -536,7 +577,7 @@ export namespace Prisma {
   type NoExpand<T> = T extends unknown ? T : never;
 
   // this type assumes the passed object is entirely optional
-  type AtLeast<O extends object, K extends string> = NoExpand<
+  export type AtLeast<O extends object, K extends string> = NoExpand<
     O extends unknown
     ? | (K extends keyof O ? { [P in K]: O[P] } & O : O)
       | {[P in keyof O as P extends K ? P : never]-?: O[P]} & O
@@ -549,19 +590,10 @@ export namespace Prisma {
 
   export type Merge<U extends object> = ComputeRaw<_Merge<Strict<U>>>;
 
-  /**
-  A [[Boolean]]
-  */
   export type Boolean = True | False
 
-  // /**
-  // 1
-  // */
   export type True = 1
 
-  /**
-  0
-  */
   export type False = 0
 
   export type Not<B extends Boolean> = {
@@ -591,16 +623,6 @@ export namespace Prisma {
   }[B1][B2]
 
   export type Keys<U extends Union> = U extends unknown ? keyof U : never
-
-  type Cast<A, B> = A extends B ? A : B;
-
-  export const type: unique symbol;
-
-
-
-  /**
-   * Used by group by
-   */
 
   export type GetScalarType<T, O> = O extends object ? {
     [P in keyof T]: P extends keyof O
@@ -652,13 +674,13 @@ export namespace Prisma {
   type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRef<Model, FieldType>
 
 
-  export const ModelName: {
+  export const ModelName = {
     User: 'User',
     Room: 'Room',
     Message: 'Message',
     MessageView: 'MessageView',
     MessageReaction: 'MessageReaction'
-  };
+  } as const
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
 
@@ -667,11 +689,11 @@ export namespace Prisma {
     db?: Datasource
   }
 
-  interface TypeMapCb<ClientOptions = {}> extends $Utils.Fn<{extArgs: $Extensions.InternalArgs }, $Utils.Record<string, any>> {
+  export interface TypeMapCb<ClientOptions = {}> extends runtime.Types.Utils.Fn<{extArgs: runtime.Types.Extensions.InternalArgs }, runtime.Types.Utils.Record<string, any>> {
     returns: Prisma.TypeMap<this['params']['extArgs'], ClientOptions extends { omit: infer OmitOptions } ? OmitOptions : {}>
   }
 
-  export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> = {
+  export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> = {
     globalOmitOptions: {
       omit: GlobalOmitOptions
     }
@@ -686,27 +708,27 @@ export namespace Prisma {
         operations: {
           findUnique: {
             args: Prisma.UserFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload> | null
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload> | null
           }
           findUniqueOrThrow: {
             args: Prisma.UserFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
           }
           findFirst: {
             args: Prisma.UserFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload> | null
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload> | null
           }
           findFirstOrThrow: {
             args: Prisma.UserFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
           }
           findMany: {
             args: Prisma.UserFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>[]
           }
           create: {
             args: Prisma.UserCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
           }
           createMany: {
             args: Prisma.UserCreateManyArgs<ExtArgs>
@@ -714,15 +736,15 @@ export namespace Prisma {
           }
           createManyAndReturn: {
             args: Prisma.UserCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>[]
           }
           delete: {
             args: Prisma.UserDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
           }
           update: {
             args: Prisma.UserUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
           }
           deleteMany: {
             args: Prisma.UserDeleteManyArgs<ExtArgs>
@@ -734,23 +756,23 @@ export namespace Prisma {
           }
           updateManyAndReturn: {
             args: Prisma.UserUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>[]
           }
           upsert: {
             args: Prisma.UserUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
           }
           aggregate: {
             args: Prisma.UserAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateUser>
+            result: runtime.Types.Utils.Optional<AggregateUser>
           }
           groupBy: {
             args: Prisma.UserGroupByArgs<ExtArgs>
-            result: $Utils.Optional<UserGroupByOutputType>[]
+            result: runtime.Types.Utils.Optional<UserGroupByOutputType>[]
           }
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
-            result: $Utils.Optional<UserCountAggregateOutputType> | number
+            result: runtime.Types.Utils.Optional<UserCountAggregateOutputType> | number
           }
         }
       }
@@ -760,27 +782,27 @@ export namespace Prisma {
         operations: {
           findUnique: {
             args: Prisma.RoomFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload> | null
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload> | null
           }
           findUniqueOrThrow: {
             args: Prisma.RoomFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
           }
           findFirst: {
             args: Prisma.RoomFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload> | null
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload> | null
           }
           findFirstOrThrow: {
             args: Prisma.RoomFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
           }
           findMany: {
             args: Prisma.RoomFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>[]
           }
           create: {
             args: Prisma.RoomCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
           }
           createMany: {
             args: Prisma.RoomCreateManyArgs<ExtArgs>
@@ -788,15 +810,15 @@ export namespace Prisma {
           }
           createManyAndReturn: {
             args: Prisma.RoomCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>[]
           }
           delete: {
             args: Prisma.RoomDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
           }
           update: {
             args: Prisma.RoomUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
           }
           deleteMany: {
             args: Prisma.RoomDeleteManyArgs<ExtArgs>
@@ -808,23 +830,23 @@ export namespace Prisma {
           }
           updateManyAndReturn: {
             args: Prisma.RoomUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>[]
           }
           upsert: {
             args: Prisma.RoomUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RoomPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
           }
           aggregate: {
             args: Prisma.RoomAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateRoom>
+            result: runtime.Types.Utils.Optional<AggregateRoom>
           }
           groupBy: {
             args: Prisma.RoomGroupByArgs<ExtArgs>
-            result: $Utils.Optional<RoomGroupByOutputType>[]
+            result: runtime.Types.Utils.Optional<RoomGroupByOutputType>[]
           }
           count: {
             args: Prisma.RoomCountArgs<ExtArgs>
-            result: $Utils.Optional<RoomCountAggregateOutputType> | number
+            result: runtime.Types.Utils.Optional<RoomCountAggregateOutputType> | number
           }
         }
       }
@@ -834,27 +856,27 @@ export namespace Prisma {
         operations: {
           findUnique: {
             args: Prisma.MessageFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload> | null
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload> | null
           }
           findUniqueOrThrow: {
             args: Prisma.MessageFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload>
           }
           findFirst: {
             args: Prisma.MessageFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload> | null
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload> | null
           }
           findFirstOrThrow: {
             args: Prisma.MessageFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload>
           }
           findMany: {
             args: Prisma.MessageFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload>[]
           }
           create: {
             args: Prisma.MessageCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload>
           }
           createMany: {
             args: Prisma.MessageCreateManyArgs<ExtArgs>
@@ -862,15 +884,15 @@ export namespace Prisma {
           }
           createManyAndReturn: {
             args: Prisma.MessageCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload>[]
           }
           delete: {
             args: Prisma.MessageDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload>
           }
           update: {
             args: Prisma.MessageUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload>
           }
           deleteMany: {
             args: Prisma.MessageDeleteManyArgs<ExtArgs>
@@ -882,23 +904,23 @@ export namespace Prisma {
           }
           updateManyAndReturn: {
             args: Prisma.MessageUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload>[]
           }
           upsert: {
             args: Prisma.MessageUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessagePayload>
           }
           aggregate: {
             args: Prisma.MessageAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateMessage>
+            result: runtime.Types.Utils.Optional<AggregateMessage>
           }
           groupBy: {
             args: Prisma.MessageGroupByArgs<ExtArgs>
-            result: $Utils.Optional<MessageGroupByOutputType>[]
+            result: runtime.Types.Utils.Optional<MessageGroupByOutputType>[]
           }
           count: {
             args: Prisma.MessageCountArgs<ExtArgs>
-            result: $Utils.Optional<MessageCountAggregateOutputType> | number
+            result: runtime.Types.Utils.Optional<MessageCountAggregateOutputType> | number
           }
         }
       }
@@ -908,27 +930,27 @@ export namespace Prisma {
         operations: {
           findUnique: {
             args: Prisma.MessageViewFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload> | null
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload> | null
           }
           findUniqueOrThrow: {
             args: Prisma.MessageViewFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload>
           }
           findFirst: {
             args: Prisma.MessageViewFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload> | null
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload> | null
           }
           findFirstOrThrow: {
             args: Prisma.MessageViewFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload>
           }
           findMany: {
             args: Prisma.MessageViewFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload>[]
           }
           create: {
             args: Prisma.MessageViewCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload>
           }
           createMany: {
             args: Prisma.MessageViewCreateManyArgs<ExtArgs>
@@ -936,15 +958,15 @@ export namespace Prisma {
           }
           createManyAndReturn: {
             args: Prisma.MessageViewCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload>[]
           }
           delete: {
             args: Prisma.MessageViewDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload>
           }
           update: {
             args: Prisma.MessageViewUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload>
           }
           deleteMany: {
             args: Prisma.MessageViewDeleteManyArgs<ExtArgs>
@@ -956,23 +978,23 @@ export namespace Prisma {
           }
           updateManyAndReturn: {
             args: Prisma.MessageViewUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload>[]
           }
           upsert: {
             args: Prisma.MessageViewUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageViewPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageViewPayload>
           }
           aggregate: {
             args: Prisma.MessageViewAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateMessageView>
+            result: runtime.Types.Utils.Optional<AggregateMessageView>
           }
           groupBy: {
             args: Prisma.MessageViewGroupByArgs<ExtArgs>
-            result: $Utils.Optional<MessageViewGroupByOutputType>[]
+            result: runtime.Types.Utils.Optional<MessageViewGroupByOutputType>[]
           }
           count: {
             args: Prisma.MessageViewCountArgs<ExtArgs>
-            result: $Utils.Optional<MessageViewCountAggregateOutputType> | number
+            result: runtime.Types.Utils.Optional<MessageViewCountAggregateOutputType> | number
           }
         }
       }
@@ -982,27 +1004,27 @@ export namespace Prisma {
         operations: {
           findUnique: {
             args: Prisma.MessageReactionFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload> | null
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload> | null
           }
           findUniqueOrThrow: {
             args: Prisma.MessageReactionFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload>
           }
           findFirst: {
             args: Prisma.MessageReactionFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload> | null
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload> | null
           }
           findFirstOrThrow: {
             args: Prisma.MessageReactionFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload>
           }
           findMany: {
             args: Prisma.MessageReactionFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload>[]
           }
           create: {
             args: Prisma.MessageReactionCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload>
           }
           createMany: {
             args: Prisma.MessageReactionCreateManyArgs<ExtArgs>
@@ -1010,15 +1032,15 @@ export namespace Prisma {
           }
           createManyAndReturn: {
             args: Prisma.MessageReactionCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload>[]
           }
           delete: {
             args: Prisma.MessageReactionDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload>
           }
           update: {
             args: Prisma.MessageReactionUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload>
           }
           deleteMany: {
             args: Prisma.MessageReactionDeleteManyArgs<ExtArgs>
@@ -1030,23 +1052,23 @@ export namespace Prisma {
           }
           updateManyAndReturn: {
             args: Prisma.MessageReactionUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload>[]
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload>[]
           }
           upsert: {
             args: Prisma.MessageReactionUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MessageReactionPayload>
+            result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageReactionPayload>
           }
           aggregate: {
             args: Prisma.MessageReactionAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateMessageReaction>
+            result: runtime.Types.Utils.Optional<AggregateMessageReaction>
           }
           groupBy: {
             args: Prisma.MessageReactionGroupByArgs<ExtArgs>
-            result: $Utils.Optional<MessageReactionGroupByOutputType>[]
+            result: runtime.Types.Utils.Optional<MessageReactionGroupByOutputType>[]
           }
           count: {
             args: Prisma.MessageReactionCountArgs<ExtArgs>
-            result: $Utils.Optional<MessageReactionCountAggregateOutputType> | number
+            result: runtime.Types.Utils.Optional<MessageReactionCountAggregateOutputType> | number
           }
         }
       }
@@ -1074,7 +1096,7 @@ export namespace Prisma {
       }
     }
   }
-  export const defineExtension: $Extensions.ExtendsHook<"define", Prisma.TypeMapCb, $Extensions.DefaultArgs>
+  export const defineExtension = runtime.Extensions.defineExtension as unknown as runtime.Types.Extensions.ExtendsHook<"define", Prisma.TypeMapCb, runtime.Types.Extensions.DefaultArgs>
   export type DefaultPrismaClient = PrismaClient
   export type ErrorFormat = 'pretty' | 'colorless' | 'minimal'
   export interface PrismaClientOptions {
@@ -1208,11 +1230,8 @@ export namespace Prisma {
    */
   export type Middleware<T = any> = (
     params: MiddlewareParams,
-    next: (params: MiddlewareParams) => $Utils.JsPromise<T>,
-  ) => $Utils.JsPromise<T>
-
-  // tested in getLogLevel.test.ts
-  export function getLogLevel(log: Array<LogLevel | LogDefinition>): LogLevel | undefined;
+    next: (params: MiddlewareParams) => runtime.Types.Utils.JsPromise<T>,
+  ) => runtime.Types.Utils.JsPromise<T>
 
   /**
    * `PrismaClient` proxy available in interactive transactions.
@@ -1240,7 +1259,7 @@ export namespace Prisma {
     createdRooms: number
   }
 
-  export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     messages?: boolean | UserCountOutputTypeCountMessagesArgs
     reactions?: boolean | UserCountOutputTypeCountReactionsArgs
     viewedMessages?: boolean | UserCountOutputTypeCountViewedMessagesArgs
@@ -1252,7 +1271,7 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the UserCountOutputType
      */
@@ -1262,35 +1281,35 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: MessageWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountReactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeCountReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: MessageReactionWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountViewedMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeCountViewedMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: MessageViewWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountRoomsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeCountRoomsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: RoomWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountCreatedRoomsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeCountCreatedRoomsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: RoomWhereInput
   }
 
@@ -1304,7 +1323,7 @@ export namespace Prisma {
     users: number
   }
 
-  export type RoomCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     messages?: boolean | RoomCountOutputTypeCountMessagesArgs
     users?: boolean | RoomCountOutputTypeCountUsersArgs
   }
@@ -1313,7 +1332,7 @@ export namespace Prisma {
   /**
    * RoomCountOutputType without action
    */
-  export type RoomCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the RoomCountOutputType
      */
@@ -1323,14 +1342,14 @@ export namespace Prisma {
   /**
    * RoomCountOutputType without action
    */
-  export type RoomCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: MessageWhereInput
   }
 
   /**
    * RoomCountOutputType without action
    */
-  export type RoomCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: UserWhereInput
   }
 
@@ -1345,7 +1364,7 @@ export namespace Prisma {
     views: number
   }
 
-  export type MessageCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     replies?: boolean | MessageCountOutputTypeCountRepliesArgs
     reactions?: boolean | MessageCountOutputTypeCountReactionsArgs
     views?: boolean | MessageCountOutputTypeCountViewsArgs
@@ -1355,7 +1374,7 @@ export namespace Prisma {
   /**
    * MessageCountOutputType without action
    */
-  export type MessageCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageCountOutputType
      */
@@ -1365,21 +1384,21 @@ export namespace Prisma {
   /**
    * MessageCountOutputType without action
    */
-  export type MessageCountOutputTypeCountRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageCountOutputTypeCountRepliesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: MessageWhereInput
   }
 
   /**
    * MessageCountOutputType without action
    */
-  export type MessageCountOutputTypeCountReactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageCountOutputTypeCountReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: MessageReactionWhereInput
   }
 
   /**
    * MessageCountOutputType without action
    */
-  export type MessageCountOutputTypeCountViewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageCountOutputTypeCountViewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: MessageViewWhereInput
   }
 
@@ -1455,7 +1474,7 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type UserAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Filter which User to aggregate.
      */
@@ -1515,7 +1534,7 @@ export namespace Prisma {
 
 
 
-  export type UserGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: UserWhereInput
     orderBy?: UserOrderByWithAggregationInput | UserOrderByWithAggregationInput[]
     by: UserScalarFieldEnum[] | UserScalarFieldEnum
@@ -1553,7 +1572,7 @@ export namespace Prisma {
     >
 
 
-  export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     username?: boolean
     password?: boolean
@@ -1568,7 +1587,7 @@ export namespace Prisma {
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
-  export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     username?: boolean
     password?: boolean
@@ -1577,7 +1596,7 @@ export namespace Prisma {
     profilePicture?: boolean
   }, ExtArgs["result"]["user"]>
 
-  export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     username?: boolean
     password?: boolean
@@ -1595,8 +1614,8 @@ export namespace Prisma {
     profilePicture?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "password" | "bio" | "isDeleted" | "profilePicture", ExtArgs["result"]["user"]>
-  export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "password" | "bio" | "isDeleted" | "profilePicture", ExtArgs["result"]["user"]>
+  export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     messages?: boolean | User$messagesArgs<ExtArgs>
     reactions?: boolean | User$reactionsArgs<ExtArgs>
     viewedMessages?: boolean | User$viewedMessagesArgs<ExtArgs>
@@ -1604,10 +1623,10 @@ export namespace Prisma {
     createdRooms?: boolean | User$createdRoomsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+  export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
-  export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "User"
     objects: {
       messages: Prisma.$MessagePayload<ExtArgs>[]
@@ -1616,7 +1635,7 @@ export namespace Prisma {
       rooms: Prisma.$RoomPayload<ExtArgs>[]
       createdRooms: Prisma.$RoomPayload<ExtArgs>[]
     }
-    scalars: $Extensions.GetPayloadResult<{
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
       id: string
       username: string
       password: string
@@ -1627,14 +1646,14 @@ export namespace Prisma {
     composites: {}
   }
 
-  type UserGetPayload<S extends boolean | null | undefined | UserDefaultArgs> = $Result.GetResult<Prisma.$UserPayload, S>
+  export type UserGetPayload<S extends boolean | null | undefined | UserDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$UserPayload, S>
 
-  type UserCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+  export type UserCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
     Omit<UserFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: UserCountAggregateInputType | true
     }
 
-  export interface UserDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+  export interface UserDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['User'], meta: { name: 'User' } }
     /**
      * Find zero or one User that matches the filter.
@@ -1647,7 +1666,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findUnique<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find one User that matches the filter or throw an error with `error.code='P2025'`
@@ -1661,7 +1680,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findUniqueOrThrow<T extends UserFindUniqueOrThrowArgs>(args: SelectSubset<T, UserFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends UserFindUniqueOrThrowArgs>(args: SelectSubset<T, UserFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find the first User that matches the filter.
@@ -1676,7 +1695,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findFirst<T extends UserFindFirstArgs>(args?: SelectSubset<T, UserFindFirstArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends UserFindFirstArgs>(args?: SelectSubset<T, UserFindFirstArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find the first User that matches the filter or
@@ -1692,7 +1711,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findFirstOrThrow<T extends UserFindFirstOrThrowArgs>(args?: SelectSubset<T, UserFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends UserFindFirstOrThrowArgs>(args?: SelectSubset<T, UserFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find zero or more Users that matches the filter.
@@ -1710,7 +1729,7 @@ export namespace Prisma {
      * const userWithIdOnly = await prisma.user.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends UserFindManyArgs>(args?: SelectSubset<T, UserFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends UserFindManyArgs>(args?: SelectSubset<T, UserFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
      * Create a User.
@@ -1724,7 +1743,7 @@ export namespace Prisma {
      * })
      * 
      */
-    create<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Create many Users.
@@ -1762,7 +1781,7 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends UserCreateManyAndReturnArgs>(args?: SelectSubset<T, UserCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends UserCreateManyAndReturnArgs>(args?: SelectSubset<T, UserCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Delete a User.
@@ -1776,7 +1795,7 @@ export namespace Prisma {
      * })
      * 
      */
-    delete<T extends UserDeleteArgs>(args: SelectSubset<T, UserDeleteArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends UserDeleteArgs>(args: SelectSubset<T, UserDeleteArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Update one User.
@@ -1793,7 +1812,7 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends UserUpdateArgs>(args: SelectSubset<T, UserUpdateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends UserUpdateArgs>(args: SelectSubset<T, UserUpdateArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Delete zero or more Users.
@@ -1856,7 +1875,7 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends UserUpdateManyAndReturnArgs>(args: SelectSubset<T, UserUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends UserUpdateManyAndReturnArgs>(args: SelectSubset<T, UserUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one User.
@@ -1875,7 +1894,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    upsert<T extends UserUpsertArgs>(args: SelectSubset<T, UserUpsertArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends UserUpsertArgs>(args: SelectSubset<T, UserUpsertArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
@@ -1894,7 +1913,7 @@ export namespace Prisma {
     count<T extends UserCountArgs>(
       args?: Subset<T, UserCountArgs>,
     ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+      T extends runtime.Types.Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], UserCountAggregateOutputType>
@@ -2015,33 +2034,33 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    messages<T extends User$messagesArgs<ExtArgs> = {}>(args?: Subset<T, User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    reactions<T extends User$reactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    viewedMessages<T extends User$viewedMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$viewedMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    rooms<T extends User$roomsArgs<ExtArgs> = {}>(args?: Subset<T, User$roomsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    createdRooms<T extends User$createdRoomsArgs<ExtArgs> = {}>(args?: Subset<T, User$createdRoomsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    messages<T extends User$messagesArgs<ExtArgs> = {}>(args?: Subset<T, User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reactions<T extends User$reactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    viewedMessages<T extends User$viewedMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$viewedMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    rooms<T extends User$roomsArgs<ExtArgs> = {}>(args?: Subset<T, User$roomsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    createdRooms<T extends User$createdRoomsArgs<ExtArgs> = {}>(args?: Subset<T, User$createdRoomsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>
   }
 
 
@@ -2050,7 +2069,7 @@ export namespace Prisma {
   /**
    * Fields of the User model
    */
-  interface UserFieldRefs {
+  export interface UserFieldRefs {
     readonly id: FieldRef<"User", 'String'>
     readonly username: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
@@ -2064,7 +2083,7 @@ export namespace Prisma {
   /**
    * User findUnique
    */
-  export type UserFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2086,7 +2105,7 @@ export namespace Prisma {
   /**
    * User findUniqueOrThrow
    */
-  export type UserFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2108,7 +2127,7 @@ export namespace Prisma {
   /**
    * User findFirst
    */
-  export type UserFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2160,7 +2179,7 @@ export namespace Prisma {
   /**
    * User findFirstOrThrow
    */
-  export type UserFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2212,7 +2231,7 @@ export namespace Prisma {
   /**
    * User findMany
    */
-  export type UserFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2259,7 +2278,7 @@ export namespace Prisma {
   /**
    * User create
    */
-  export type UserCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2281,7 +2300,7 @@ export namespace Prisma {
   /**
    * User createMany
    */
-  export type UserCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * The data used to create many Users.
      */
@@ -2292,7 +2311,7 @@ export namespace Prisma {
   /**
    * User createManyAndReturn
    */
-  export type UserCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2311,7 +2330,7 @@ export namespace Prisma {
   /**
    * User update
    */
-  export type UserUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2337,7 +2356,7 @@ export namespace Prisma {
   /**
    * User updateMany
    */
-  export type UserUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * The data used to update Users.
      */
@@ -2355,7 +2374,7 @@ export namespace Prisma {
   /**
    * User updateManyAndReturn
    */
-  export type UserUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2381,7 +2400,7 @@ export namespace Prisma {
   /**
    * User upsert
    */
-  export type UserUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2411,7 +2430,7 @@ export namespace Prisma {
   /**
    * User delete
    */
-  export type UserDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2433,7 +2452,7 @@ export namespace Prisma {
   /**
    * User deleteMany
    */
-  export type UserDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Filter which Users to delete
      */
@@ -2447,7 +2466,7 @@ export namespace Prisma {
   /**
    * User.messages
    */
-  export type User$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$messagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -2471,7 +2490,7 @@ export namespace Prisma {
   /**
    * User.reactions
    */
-  export type User$reactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$reactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -2495,7 +2514,7 @@ export namespace Prisma {
   /**
    * User.viewedMessages
    */
-  export type User$viewedMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$viewedMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -2519,7 +2538,7 @@ export namespace Prisma {
   /**
    * User.rooms
    */
-  export type User$roomsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$roomsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -2543,7 +2562,7 @@ export namespace Prisma {
   /**
    * User.createdRooms
    */
-  export type User$createdRoomsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$createdRoomsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -2567,7 +2586,7 @@ export namespace Prisma {
   /**
    * User without action
    */
-  export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -2650,7 +2669,7 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type RoomAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Filter which Room to aggregate.
      */
@@ -2710,7 +2729,7 @@ export namespace Prisma {
 
 
 
-  export type RoomGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: RoomWhereInput
     orderBy?: RoomOrderByWithAggregationInput | RoomOrderByWithAggregationInput[]
     by: RoomScalarFieldEnum[] | RoomScalarFieldEnum
@@ -2748,7 +2767,7 @@ export namespace Prisma {
     >
 
 
-  export type RoomSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type RoomSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     roomName?: boolean
     description?: boolean
@@ -2761,7 +2780,7 @@ export namespace Prisma {
     _count?: boolean | RoomCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["room"]>
 
-  export type RoomSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type RoomSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     roomName?: boolean
     description?: boolean
@@ -2771,7 +2790,7 @@ export namespace Prisma {
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["room"]>
 
-  export type RoomSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type RoomSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     roomName?: boolean
     description?: boolean
@@ -2790,28 +2809,28 @@ export namespace Prisma {
     profilePicture?: boolean
   }
 
-  export type RoomOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "roomName" | "description" | "createdAt" | "createdById" | "profilePicture", ExtArgs["result"]["room"]>
-  export type RoomInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "roomName" | "description" | "createdAt" | "createdById" | "profilePicture", ExtArgs["result"]["room"]>
+  export type RoomInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     messages?: boolean | Room$messagesArgs<ExtArgs>
     users?: boolean | Room$usersArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | RoomCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type RoomIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type RoomIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
   }
 
-  export type $RoomPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type $RoomPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "Room"
     objects: {
       messages: Prisma.$MessagePayload<ExtArgs>[]
       users: Prisma.$UserPayload<ExtArgs>[]
       createdBy: Prisma.$UserPayload<ExtArgs>
     }
-    scalars: $Extensions.GetPayloadResult<{
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
       id: string
       roomName: string
       description: string
@@ -2822,14 +2841,14 @@ export namespace Prisma {
     composites: {}
   }
 
-  type RoomGetPayload<S extends boolean | null | undefined | RoomDefaultArgs> = $Result.GetResult<Prisma.$RoomPayload, S>
+  export type RoomGetPayload<S extends boolean | null | undefined | RoomDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$RoomPayload, S>
 
-  type RoomCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+  export type RoomCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
     Omit<RoomFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: RoomCountAggregateInputType | true
     }
 
-  export interface RoomDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+  export interface RoomDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Room'], meta: { name: 'Room' } }
     /**
      * Find zero or one Room that matches the filter.
@@ -2842,7 +2861,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findUnique<T extends RoomFindUniqueArgs>(args: SelectSubset<T, RoomFindUniqueArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends RoomFindUniqueArgs>(args: SelectSubset<T, RoomFindUniqueArgs<ExtArgs>>): Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find one Room that matches the filter or throw an error with `error.code='P2025'`
@@ -2856,7 +2875,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findUniqueOrThrow<T extends RoomFindUniqueOrThrowArgs>(args: SelectSubset<T, RoomFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends RoomFindUniqueOrThrowArgs>(args: SelectSubset<T, RoomFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find the first Room that matches the filter.
@@ -2871,7 +2890,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findFirst<T extends RoomFindFirstArgs>(args?: SelectSubset<T, RoomFindFirstArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends RoomFindFirstArgs>(args?: SelectSubset<T, RoomFindFirstArgs<ExtArgs>>): Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find the first Room that matches the filter or
@@ -2887,7 +2906,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findFirstOrThrow<T extends RoomFindFirstOrThrowArgs>(args?: SelectSubset<T, RoomFindFirstOrThrowArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends RoomFindFirstOrThrowArgs>(args?: SelectSubset<T, RoomFindFirstOrThrowArgs<ExtArgs>>): Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find zero or more Rooms that matches the filter.
@@ -2905,7 +2924,7 @@ export namespace Prisma {
      * const roomWithIdOnly = await prisma.room.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends RoomFindManyArgs>(args?: SelectSubset<T, RoomFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends RoomFindManyArgs>(args?: SelectSubset<T, RoomFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
      * Create a Room.
@@ -2919,7 +2938,7 @@ export namespace Prisma {
      * })
      * 
      */
-    create<T extends RoomCreateArgs>(args: SelectSubset<T, RoomCreateArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends RoomCreateArgs>(args: SelectSubset<T, RoomCreateArgs<ExtArgs>>): Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Create many Rooms.
@@ -2957,7 +2976,7 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends RoomCreateManyAndReturnArgs>(args?: SelectSubset<T, RoomCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends RoomCreateManyAndReturnArgs>(args?: SelectSubset<T, RoomCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Delete a Room.
@@ -2971,7 +2990,7 @@ export namespace Prisma {
      * })
      * 
      */
-    delete<T extends RoomDeleteArgs>(args: SelectSubset<T, RoomDeleteArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends RoomDeleteArgs>(args: SelectSubset<T, RoomDeleteArgs<ExtArgs>>): Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Update one Room.
@@ -2988,7 +3007,7 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends RoomUpdateArgs>(args: SelectSubset<T, RoomUpdateArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends RoomUpdateArgs>(args: SelectSubset<T, RoomUpdateArgs<ExtArgs>>): Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Delete zero or more Rooms.
@@ -3051,7 +3070,7 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends RoomUpdateManyAndReturnArgs>(args: SelectSubset<T, RoomUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends RoomUpdateManyAndReturnArgs>(args: SelectSubset<T, RoomUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Room.
@@ -3070,7 +3089,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    upsert<T extends RoomUpsertArgs>(args: SelectSubset<T, RoomUpsertArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends RoomUpsertArgs>(args: SelectSubset<T, RoomUpsertArgs<ExtArgs>>): Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
@@ -3089,7 +3108,7 @@ export namespace Prisma {
     count<T extends RoomCountArgs>(
       args?: Subset<T, RoomCountArgs>,
     ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+      T extends runtime.Types.Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], RoomCountAggregateOutputType>
@@ -3210,31 +3229,31 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__RoomClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__RoomClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    messages<T extends Room$messagesArgs<ExtArgs> = {}>(args?: Subset<T, Room$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    users<T extends Room$usersArgs<ExtArgs> = {}>(args?: Subset<T, Room$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    messages<T extends Room$messagesArgs<ExtArgs> = {}>(args?: Subset<T, Room$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    users<T extends Room$usersArgs<ExtArgs> = {}>(args?: Subset<T, Room$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>
   }
 
 
@@ -3243,7 +3262,7 @@ export namespace Prisma {
   /**
    * Fields of the Room model
    */
-  interface RoomFieldRefs {
+  export interface RoomFieldRefs {
     readonly id: FieldRef<"Room", 'String'>
     readonly roomName: FieldRef<"Room", 'String'>
     readonly description: FieldRef<"Room", 'String'>
@@ -3257,7 +3276,7 @@ export namespace Prisma {
   /**
    * Room findUnique
    */
-  export type RoomFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3279,7 +3298,7 @@ export namespace Prisma {
   /**
    * Room findUniqueOrThrow
    */
-  export type RoomFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3301,7 +3320,7 @@ export namespace Prisma {
   /**
    * Room findFirst
    */
-  export type RoomFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3353,7 +3372,7 @@ export namespace Prisma {
   /**
    * Room findFirstOrThrow
    */
-  export type RoomFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3405,7 +3424,7 @@ export namespace Prisma {
   /**
    * Room findMany
    */
-  export type RoomFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3452,7 +3471,7 @@ export namespace Prisma {
   /**
    * Room create
    */
-  export type RoomCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3474,7 +3493,7 @@ export namespace Prisma {
   /**
    * Room createMany
    */
-  export type RoomCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * The data used to create many Rooms.
      */
@@ -3485,7 +3504,7 @@ export namespace Prisma {
   /**
    * Room createManyAndReturn
    */
-  export type RoomCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3508,7 +3527,7 @@ export namespace Prisma {
   /**
    * Room update
    */
-  export type RoomUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3534,7 +3553,7 @@ export namespace Prisma {
   /**
    * Room updateMany
    */
-  export type RoomUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * The data used to update Rooms.
      */
@@ -3552,7 +3571,7 @@ export namespace Prisma {
   /**
    * Room updateManyAndReturn
    */
-  export type RoomUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3582,7 +3601,7 @@ export namespace Prisma {
   /**
    * Room upsert
    */
-  export type RoomUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3612,7 +3631,7 @@ export namespace Prisma {
   /**
    * Room delete
    */
-  export type RoomDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3634,7 +3653,7 @@ export namespace Prisma {
   /**
    * Room deleteMany
    */
-  export type RoomDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Filter which Rooms to delete
      */
@@ -3648,7 +3667,7 @@ export namespace Prisma {
   /**
    * Room.messages
    */
-  export type Room$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Room$messagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -3672,7 +3691,7 @@ export namespace Prisma {
   /**
    * Room.users
    */
-  export type Room$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Room$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -3696,7 +3715,7 @@ export namespace Prisma {
   /**
    * Room without action
    */
-  export type RoomDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RoomDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Room
      */
@@ -3785,7 +3804,7 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type MessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Filter which Message to aggregate.
      */
@@ -3845,7 +3864,7 @@ export namespace Prisma {
 
 
 
-  export type MessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: MessageWhereInput
     orderBy?: MessageOrderByWithAggregationInput | MessageOrderByWithAggregationInput[]
     by: MessageScalarFieldEnum[] | MessageScalarFieldEnum
@@ -3884,7 +3903,7 @@ export namespace Prisma {
     >
 
 
-  export type MessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     content?: boolean
     mediaUrl?: boolean
@@ -3901,7 +3920,7 @@ export namespace Prisma {
     _count?: boolean | MessageCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
-  export type MessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type MessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     content?: boolean
     mediaUrl?: boolean
@@ -3914,7 +3933,7 @@ export namespace Prisma {
     sender?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
-  export type MessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type MessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     content?: boolean
     mediaUrl?: boolean
@@ -3937,8 +3956,8 @@ export namespace Prisma {
     replyToId?: boolean
   }
 
-  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "mediaUrl" | "senderId" | "roomId" | "timestamp" | "replyToId", ExtArgs["result"]["message"]>
-  export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "mediaUrl" | "senderId" | "roomId" | "timestamp" | "replyToId", ExtArgs["result"]["message"]>
+  export type MessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     replyTo?: boolean | Message$replyToArgs<ExtArgs>
     replies?: boolean | Message$repliesArgs<ExtArgs>
     room?: boolean | RoomDefaultArgs<ExtArgs>
@@ -3947,18 +3966,18 @@ export namespace Prisma {
     views?: boolean | Message$viewsArgs<ExtArgs>
     _count?: boolean | MessageCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type MessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     replyTo?: boolean | Message$replyToArgs<ExtArgs>
     room?: boolean | RoomDefaultArgs<ExtArgs>
     sender?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type MessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     replyTo?: boolean | Message$replyToArgs<ExtArgs>
     room?: boolean | RoomDefaultArgs<ExtArgs>
     sender?: boolean | UserDefaultArgs<ExtArgs>
   }
 
-  export type $MessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type $MessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "Message"
     objects: {
       replyTo: Prisma.$MessagePayload<ExtArgs> | null
@@ -3968,7 +3987,7 @@ export namespace Prisma {
       reactions: Prisma.$MessageReactionPayload<ExtArgs>[]
       views: Prisma.$MessageViewPayload<ExtArgs>[]
     }
-    scalars: $Extensions.GetPayloadResult<{
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
       id: string
       content: string
       mediaUrl: string | null
@@ -3980,14 +3999,14 @@ export namespace Prisma {
     composites: {}
   }
 
-  type MessageGetPayload<S extends boolean | null | undefined | MessageDefaultArgs> = $Result.GetResult<Prisma.$MessagePayload, S>
+  export type MessageGetPayload<S extends boolean | null | undefined | MessageDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$MessagePayload, S>
 
-  type MessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+  export type MessageCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
     Omit<MessageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: MessageCountAggregateInputType | true
     }
 
-  export interface MessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+  export interface MessageDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Message'], meta: { name: 'Message' } }
     /**
      * Find zero or one Message that matches the filter.
@@ -4000,7 +4019,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findUnique<T extends MessageFindUniqueArgs>(args: SelectSubset<T, MessageFindUniqueArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends MessageFindUniqueArgs>(args: SelectSubset<T, MessageFindUniqueArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find one Message that matches the filter or throw an error with `error.code='P2025'`
@@ -4014,7 +4033,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findUniqueOrThrow<T extends MessageFindUniqueOrThrowArgs>(args: SelectSubset<T, MessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends MessageFindUniqueOrThrowArgs>(args: SelectSubset<T, MessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find the first Message that matches the filter.
@@ -4029,7 +4048,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findFirst<T extends MessageFindFirstArgs>(args?: SelectSubset<T, MessageFindFirstArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends MessageFindFirstArgs>(args?: SelectSubset<T, MessageFindFirstArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find the first Message that matches the filter or
@@ -4045,7 +4064,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findFirstOrThrow<T extends MessageFindFirstOrThrowArgs>(args?: SelectSubset<T, MessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends MessageFindFirstOrThrowArgs>(args?: SelectSubset<T, MessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find zero or more Messages that matches the filter.
@@ -4063,7 +4082,7 @@ export namespace Prisma {
      * const messageWithIdOnly = await prisma.message.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends MessageFindManyArgs>(args?: SelectSubset<T, MessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends MessageFindManyArgs>(args?: SelectSubset<T, MessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
      * Create a Message.
@@ -4077,7 +4096,7 @@ export namespace Prisma {
      * })
      * 
      */
-    create<T extends MessageCreateArgs>(args: SelectSubset<T, MessageCreateArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends MessageCreateArgs>(args: SelectSubset<T, MessageCreateArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Create many Messages.
@@ -4115,7 +4134,7 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends MessageCreateManyAndReturnArgs>(args?: SelectSubset<T, MessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends MessageCreateManyAndReturnArgs>(args?: SelectSubset<T, MessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Delete a Message.
@@ -4129,7 +4148,7 @@ export namespace Prisma {
      * })
      * 
      */
-    delete<T extends MessageDeleteArgs>(args: SelectSubset<T, MessageDeleteArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends MessageDeleteArgs>(args: SelectSubset<T, MessageDeleteArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Update one Message.
@@ -4146,7 +4165,7 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends MessageUpdateArgs>(args: SelectSubset<T, MessageUpdateArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends MessageUpdateArgs>(args: SelectSubset<T, MessageUpdateArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Delete zero or more Messages.
@@ -4209,7 +4228,7 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends MessageUpdateManyAndReturnArgs>(args: SelectSubset<T, MessageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends MessageUpdateManyAndReturnArgs>(args: SelectSubset<T, MessageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Message.
@@ -4228,7 +4247,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    upsert<T extends MessageUpsertArgs>(args: SelectSubset<T, MessageUpsertArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends MessageUpsertArgs>(args: SelectSubset<T, MessageUpsertArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
@@ -4247,7 +4266,7 @@ export namespace Prisma {
     count<T extends MessageCountArgs>(
       args?: Subset<T, MessageCountArgs>,
     ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+      T extends runtime.Types.Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], MessageCountAggregateOutputType>
@@ -4368,34 +4387,34 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__MessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__MessageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    replyTo<T extends Message$replyToArgs<ExtArgs> = {}>(args?: Subset<T, Message$replyToArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    replies<T extends Message$repliesArgs<ExtArgs> = {}>(args?: Subset<T, Message$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    room<T extends RoomDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RoomDefaultArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    sender<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    reactions<T extends Message$reactionsArgs<ExtArgs> = {}>(args?: Subset<T, Message$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    views<T extends Message$viewsArgs<ExtArgs> = {}>(args?: Subset<T, Message$viewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    replyTo<T extends Message$replyToArgs<ExtArgs> = {}>(args?: Subset<T, Message$replyToArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    replies<T extends Message$repliesArgs<ExtArgs> = {}>(args?: Subset<T, Message$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    room<T extends RoomDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RoomDefaultArgs<ExtArgs>>): Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    sender<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    reactions<T extends Message$reactionsArgs<ExtArgs> = {}>(args?: Subset<T, Message$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    views<T extends Message$viewsArgs<ExtArgs> = {}>(args?: Subset<T, Message$viewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>
   }
 
 
@@ -4404,7 +4423,7 @@ export namespace Prisma {
   /**
    * Fields of the Message model
    */
-  interface MessageFieldRefs {
+  export interface MessageFieldRefs {
     readonly id: FieldRef<"Message", 'String'>
     readonly content: FieldRef<"Message", 'String'>
     readonly mediaUrl: FieldRef<"Message", 'String'>
@@ -4419,7 +4438,7 @@ export namespace Prisma {
   /**
    * Message findUnique
    */
-  export type MessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4441,7 +4460,7 @@ export namespace Prisma {
   /**
    * Message findUniqueOrThrow
    */
-  export type MessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4463,7 +4482,7 @@ export namespace Prisma {
   /**
    * Message findFirst
    */
-  export type MessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4515,7 +4534,7 @@ export namespace Prisma {
   /**
    * Message findFirstOrThrow
    */
-  export type MessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4567,7 +4586,7 @@ export namespace Prisma {
   /**
    * Message findMany
    */
-  export type MessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4614,7 +4633,7 @@ export namespace Prisma {
   /**
    * Message create
    */
-  export type MessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4636,7 +4655,7 @@ export namespace Prisma {
   /**
    * Message createMany
    */
-  export type MessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * The data used to create many Messages.
      */
@@ -4647,7 +4666,7 @@ export namespace Prisma {
   /**
    * Message createManyAndReturn
    */
-  export type MessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4670,7 +4689,7 @@ export namespace Prisma {
   /**
    * Message update
    */
-  export type MessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4696,7 +4715,7 @@ export namespace Prisma {
   /**
    * Message updateMany
    */
-  export type MessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * The data used to update Messages.
      */
@@ -4714,7 +4733,7 @@ export namespace Prisma {
   /**
    * Message updateManyAndReturn
    */
-  export type MessageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4744,7 +4763,7 @@ export namespace Prisma {
   /**
    * Message upsert
    */
-  export type MessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4774,7 +4793,7 @@ export namespace Prisma {
   /**
    * Message delete
    */
-  export type MessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4796,7 +4815,7 @@ export namespace Prisma {
   /**
    * Message deleteMany
    */
-  export type MessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Filter which Messages to delete
      */
@@ -4810,7 +4829,7 @@ export namespace Prisma {
   /**
    * Message.replyTo
    */
-  export type Message$replyToArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Message$replyToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4829,7 +4848,7 @@ export namespace Prisma {
   /**
    * Message.replies
    */
-  export type Message$repliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Message$repliesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4853,7 +4872,7 @@ export namespace Prisma {
   /**
    * Message.reactions
    */
-  export type Message$reactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Message$reactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -4877,7 +4896,7 @@ export namespace Prisma {
   /**
    * Message.views
    */
-  export type Message$viewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Message$viewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -4901,7 +4920,7 @@ export namespace Prisma {
   /**
    * Message without action
    */
-  export type MessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -4972,7 +4991,7 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type MessageViewAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Filter which MessageView to aggregate.
      */
@@ -5032,7 +5051,7 @@ export namespace Prisma {
 
 
 
-  export type MessageViewGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: MessageViewWhereInput
     orderBy?: MessageViewOrderByWithAggregationInput | MessageViewOrderByWithAggregationInput[]
     by: MessageViewScalarFieldEnum[] | MessageViewScalarFieldEnum
@@ -5068,7 +5087,7 @@ export namespace Prisma {
     >
 
 
-  export type MessageViewSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type MessageViewSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     messageId?: boolean
     userId?: boolean
@@ -5077,7 +5096,7 @@ export namespace Prisma {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["messageView"]>
 
-  export type MessageViewSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type MessageViewSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     messageId?: boolean
     userId?: boolean
@@ -5086,7 +5105,7 @@ export namespace Prisma {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["messageView"]>
 
-  export type MessageViewSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type MessageViewSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     messageId?: boolean
     userId?: boolean
@@ -5102,27 +5121,27 @@ export namespace Prisma {
     viewedAt?: boolean
   }
 
-  export type MessageViewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "messageId" | "userId" | "viewedAt", ExtArgs["result"]["messageView"]>
-  export type MessageViewInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "messageId" | "userId" | "viewedAt", ExtArgs["result"]["messageView"]>
+  export type MessageViewInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     message?: boolean | MessageDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type MessageViewIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     message?: boolean | MessageDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type MessageViewIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     message?: boolean | MessageDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
-  export type $MessageViewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type $MessageViewPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "MessageView"
     objects: {
       message: Prisma.$MessagePayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs>
     }
-    scalars: $Extensions.GetPayloadResult<{
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
       id: string
       messageId: string
       userId: string
@@ -5131,14 +5150,14 @@ export namespace Prisma {
     composites: {}
   }
 
-  type MessageViewGetPayload<S extends boolean | null | undefined | MessageViewDefaultArgs> = $Result.GetResult<Prisma.$MessageViewPayload, S>
+  export type MessageViewGetPayload<S extends boolean | null | undefined | MessageViewDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$MessageViewPayload, S>
 
-  type MessageViewCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+  export type MessageViewCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
     Omit<MessageViewFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: MessageViewCountAggregateInputType | true
     }
 
-  export interface MessageViewDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+  export interface MessageViewDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MessageView'], meta: { name: 'MessageView' } }
     /**
      * Find zero or one MessageView that matches the filter.
@@ -5151,7 +5170,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findUnique<T extends MessageViewFindUniqueArgs>(args: SelectSubset<T, MessageViewFindUniqueArgs<ExtArgs>>): Prisma__MessageViewClient<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends MessageViewFindUniqueArgs>(args: SelectSubset<T, MessageViewFindUniqueArgs<ExtArgs>>): Prisma__MessageViewClient<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find one MessageView that matches the filter or throw an error with `error.code='P2025'`
@@ -5165,7 +5184,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findUniqueOrThrow<T extends MessageViewFindUniqueOrThrowArgs>(args: SelectSubset<T, MessageViewFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MessageViewClient<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends MessageViewFindUniqueOrThrowArgs>(args: SelectSubset<T, MessageViewFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MessageViewClient<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find the first MessageView that matches the filter.
@@ -5180,7 +5199,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findFirst<T extends MessageViewFindFirstArgs>(args?: SelectSubset<T, MessageViewFindFirstArgs<ExtArgs>>): Prisma__MessageViewClient<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends MessageViewFindFirstArgs>(args?: SelectSubset<T, MessageViewFindFirstArgs<ExtArgs>>): Prisma__MessageViewClient<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find the first MessageView that matches the filter or
@@ -5196,7 +5215,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findFirstOrThrow<T extends MessageViewFindFirstOrThrowArgs>(args?: SelectSubset<T, MessageViewFindFirstOrThrowArgs<ExtArgs>>): Prisma__MessageViewClient<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends MessageViewFindFirstOrThrowArgs>(args?: SelectSubset<T, MessageViewFindFirstOrThrowArgs<ExtArgs>>): Prisma__MessageViewClient<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find zero or more MessageViews that matches the filter.
@@ -5214,7 +5233,7 @@ export namespace Prisma {
      * const messageViewWithIdOnly = await prisma.messageView.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends MessageViewFindManyArgs>(args?: SelectSubset<T, MessageViewFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends MessageViewFindManyArgs>(args?: SelectSubset<T, MessageViewFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
      * Create a MessageView.
@@ -5228,7 +5247,7 @@ export namespace Prisma {
      * })
      * 
      */
-    create<T extends MessageViewCreateArgs>(args: SelectSubset<T, MessageViewCreateArgs<ExtArgs>>): Prisma__MessageViewClient<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends MessageViewCreateArgs>(args: SelectSubset<T, MessageViewCreateArgs<ExtArgs>>): Prisma__MessageViewClient<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Create many MessageViews.
@@ -5266,7 +5285,7 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends MessageViewCreateManyAndReturnArgs>(args?: SelectSubset<T, MessageViewCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends MessageViewCreateManyAndReturnArgs>(args?: SelectSubset<T, MessageViewCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Delete a MessageView.
@@ -5280,7 +5299,7 @@ export namespace Prisma {
      * })
      * 
      */
-    delete<T extends MessageViewDeleteArgs>(args: SelectSubset<T, MessageViewDeleteArgs<ExtArgs>>): Prisma__MessageViewClient<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends MessageViewDeleteArgs>(args: SelectSubset<T, MessageViewDeleteArgs<ExtArgs>>): Prisma__MessageViewClient<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Update one MessageView.
@@ -5297,7 +5316,7 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends MessageViewUpdateArgs>(args: SelectSubset<T, MessageViewUpdateArgs<ExtArgs>>): Prisma__MessageViewClient<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends MessageViewUpdateArgs>(args: SelectSubset<T, MessageViewUpdateArgs<ExtArgs>>): Prisma__MessageViewClient<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Delete zero or more MessageViews.
@@ -5360,7 +5379,7 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends MessageViewUpdateManyAndReturnArgs>(args: SelectSubset<T, MessageViewUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends MessageViewUpdateManyAndReturnArgs>(args: SelectSubset<T, MessageViewUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one MessageView.
@@ -5379,7 +5398,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    upsert<T extends MessageViewUpsertArgs>(args: SelectSubset<T, MessageViewUpsertArgs<ExtArgs>>): Prisma__MessageViewClient<$Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends MessageViewUpsertArgs>(args: SelectSubset<T, MessageViewUpsertArgs<ExtArgs>>): Prisma__MessageViewClient<runtime.Types.Result.GetResult<Prisma.$MessageViewPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
@@ -5398,7 +5417,7 @@ export namespace Prisma {
     count<T extends MessageViewCountArgs>(
       args?: Subset<T, MessageViewCountArgs>,
     ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+      T extends runtime.Types.Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], MessageViewCountAggregateOutputType>
@@ -5519,30 +5538,30 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__MessageViewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__MessageViewClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    message<T extends MessageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MessageDefaultArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    message<T extends MessageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MessageDefaultArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>
   }
 
 
@@ -5551,7 +5570,7 @@ export namespace Prisma {
   /**
    * Fields of the MessageView model
    */
-  interface MessageViewFieldRefs {
+  export interface MessageViewFieldRefs {
     readonly id: FieldRef<"MessageView", 'String'>
     readonly messageId: FieldRef<"MessageView", 'String'>
     readonly userId: FieldRef<"MessageView", 'String'>
@@ -5563,7 +5582,7 @@ export namespace Prisma {
   /**
    * MessageView findUnique
    */
-  export type MessageViewFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5585,7 +5604,7 @@ export namespace Prisma {
   /**
    * MessageView findUniqueOrThrow
    */
-  export type MessageViewFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5607,7 +5626,7 @@ export namespace Prisma {
   /**
    * MessageView findFirst
    */
-  export type MessageViewFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5659,7 +5678,7 @@ export namespace Prisma {
   /**
    * MessageView findFirstOrThrow
    */
-  export type MessageViewFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5711,7 +5730,7 @@ export namespace Prisma {
   /**
    * MessageView findMany
    */
-  export type MessageViewFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5758,7 +5777,7 @@ export namespace Prisma {
   /**
    * MessageView create
    */
-  export type MessageViewCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5780,7 +5799,7 @@ export namespace Prisma {
   /**
    * MessageView createMany
    */
-  export type MessageViewCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * The data used to create many MessageViews.
      */
@@ -5791,7 +5810,7 @@ export namespace Prisma {
   /**
    * MessageView createManyAndReturn
    */
-  export type MessageViewCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5814,7 +5833,7 @@ export namespace Prisma {
   /**
    * MessageView update
    */
-  export type MessageViewUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5840,7 +5859,7 @@ export namespace Prisma {
   /**
    * MessageView updateMany
    */
-  export type MessageViewUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * The data used to update MessageViews.
      */
@@ -5858,7 +5877,7 @@ export namespace Prisma {
   /**
    * MessageView updateManyAndReturn
    */
-  export type MessageViewUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5888,7 +5907,7 @@ export namespace Prisma {
   /**
    * MessageView upsert
    */
-  export type MessageViewUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5918,7 +5937,7 @@ export namespace Prisma {
   /**
    * MessageView delete
    */
-  export type MessageViewDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -5940,7 +5959,7 @@ export namespace Prisma {
   /**
    * MessageView deleteMany
    */
-  export type MessageViewDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Filter which MessageViews to delete
      */
@@ -5954,7 +5973,7 @@ export namespace Prisma {
   /**
    * MessageView without action
    */
-  export type MessageViewDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageViewDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageView
      */
@@ -6025,7 +6044,7 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type MessageReactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Filter which MessageReaction to aggregate.
      */
@@ -6085,7 +6104,7 @@ export namespace Prisma {
 
 
 
-  export type MessageReactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: MessageReactionWhereInput
     orderBy?: MessageReactionOrderByWithAggregationInput | MessageReactionOrderByWithAggregationInput[]
     by: MessageReactionScalarFieldEnum[] | MessageReactionScalarFieldEnum
@@ -6121,7 +6140,7 @@ export namespace Prisma {
     >
 
 
-  export type MessageReactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type MessageReactionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     messageId?: boolean
     userId?: boolean
@@ -6130,7 +6149,7 @@ export namespace Prisma {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["messageReaction"]>
 
-  export type MessageReactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type MessageReactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     messageId?: boolean
     userId?: boolean
@@ -6139,7 +6158,7 @@ export namespace Prisma {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["messageReaction"]>
 
-  export type MessageReactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type MessageReactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean
     messageId?: boolean
     userId?: boolean
@@ -6155,27 +6174,27 @@ export namespace Prisma {
     type?: boolean
   }
 
-  export type MessageReactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "messageId" | "userId" | "type", ExtArgs["result"]["messageReaction"]>
-  export type MessageReactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "messageId" | "userId" | "type", ExtArgs["result"]["messageReaction"]>
+  export type MessageReactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     message?: boolean | MessageDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type MessageReactionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     message?: boolean | MessageDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type MessageReactionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     message?: boolean | MessageDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
-  export type $MessageReactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type $MessageReactionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "MessageReaction"
     objects: {
       message: Prisma.$MessagePayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs>
     }
-    scalars: $Extensions.GetPayloadResult<{
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
       id: string
       messageId: string
       userId: string
@@ -6184,14 +6203,14 @@ export namespace Prisma {
     composites: {}
   }
 
-  type MessageReactionGetPayload<S extends boolean | null | undefined | MessageReactionDefaultArgs> = $Result.GetResult<Prisma.$MessageReactionPayload, S>
+  export type MessageReactionGetPayload<S extends boolean | null | undefined | MessageReactionDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload, S>
 
-  type MessageReactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+  export type MessageReactionCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
     Omit<MessageReactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: MessageReactionCountAggregateInputType | true
     }
 
-  export interface MessageReactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+  export interface MessageReactionDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MessageReaction'], meta: { name: 'MessageReaction' } }
     /**
      * Find zero or one MessageReaction that matches the filter.
@@ -6204,7 +6223,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findUnique<T extends MessageReactionFindUniqueArgs>(args: SelectSubset<T, MessageReactionFindUniqueArgs<ExtArgs>>): Prisma__MessageReactionClient<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends MessageReactionFindUniqueArgs>(args: SelectSubset<T, MessageReactionFindUniqueArgs<ExtArgs>>): Prisma__MessageReactionClient<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find one MessageReaction that matches the filter or throw an error with `error.code='P2025'`
@@ -6218,7 +6237,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findUniqueOrThrow<T extends MessageReactionFindUniqueOrThrowArgs>(args: SelectSubset<T, MessageReactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MessageReactionClient<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends MessageReactionFindUniqueOrThrowArgs>(args: SelectSubset<T, MessageReactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MessageReactionClient<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find the first MessageReaction that matches the filter.
@@ -6233,7 +6252,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findFirst<T extends MessageReactionFindFirstArgs>(args?: SelectSubset<T, MessageReactionFindFirstArgs<ExtArgs>>): Prisma__MessageReactionClient<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends MessageReactionFindFirstArgs>(args?: SelectSubset<T, MessageReactionFindFirstArgs<ExtArgs>>): Prisma__MessageReactionClient<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find the first MessageReaction that matches the filter or
@@ -6249,7 +6268,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    findFirstOrThrow<T extends MessageReactionFindFirstOrThrowArgs>(args?: SelectSubset<T, MessageReactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__MessageReactionClient<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends MessageReactionFindFirstOrThrowArgs>(args?: SelectSubset<T, MessageReactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__MessageReactionClient<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Find zero or more MessageReactions that matches the filter.
@@ -6267,7 +6286,7 @@ export namespace Prisma {
      * const messageReactionWithIdOnly = await prisma.messageReaction.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends MessageReactionFindManyArgs>(args?: SelectSubset<T, MessageReactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends MessageReactionFindManyArgs>(args?: SelectSubset<T, MessageReactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
      * Create a MessageReaction.
@@ -6281,7 +6300,7 @@ export namespace Prisma {
      * })
      * 
      */
-    create<T extends MessageReactionCreateArgs>(args: SelectSubset<T, MessageReactionCreateArgs<ExtArgs>>): Prisma__MessageReactionClient<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends MessageReactionCreateArgs>(args: SelectSubset<T, MessageReactionCreateArgs<ExtArgs>>): Prisma__MessageReactionClient<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Create many MessageReactions.
@@ -6319,7 +6338,7 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends MessageReactionCreateManyAndReturnArgs>(args?: SelectSubset<T, MessageReactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends MessageReactionCreateManyAndReturnArgs>(args?: SelectSubset<T, MessageReactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Delete a MessageReaction.
@@ -6333,7 +6352,7 @@ export namespace Prisma {
      * })
      * 
      */
-    delete<T extends MessageReactionDeleteArgs>(args: SelectSubset<T, MessageReactionDeleteArgs<ExtArgs>>): Prisma__MessageReactionClient<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends MessageReactionDeleteArgs>(args: SelectSubset<T, MessageReactionDeleteArgs<ExtArgs>>): Prisma__MessageReactionClient<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Update one MessageReaction.
@@ -6350,7 +6369,7 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends MessageReactionUpdateArgs>(args: SelectSubset<T, MessageReactionUpdateArgs<ExtArgs>>): Prisma__MessageReactionClient<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends MessageReactionUpdateArgs>(args: SelectSubset<T, MessageReactionUpdateArgs<ExtArgs>>): Prisma__MessageReactionClient<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
      * Delete zero or more MessageReactions.
@@ -6413,7 +6432,7 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends MessageReactionUpdateManyAndReturnArgs>(args: SelectSubset<T, MessageReactionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends MessageReactionUpdateManyAndReturnArgs>(args: SelectSubset<T, MessageReactionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one MessageReaction.
@@ -6432,7 +6451,7 @@ export namespace Prisma {
      *   }
      * })
      */
-    upsert<T extends MessageReactionUpsertArgs>(args: SelectSubset<T, MessageReactionUpsertArgs<ExtArgs>>): Prisma__MessageReactionClient<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends MessageReactionUpsertArgs>(args: SelectSubset<T, MessageReactionUpsertArgs<ExtArgs>>): Prisma__MessageReactionClient<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
@@ -6451,7 +6470,7 @@ export namespace Prisma {
     count<T extends MessageReactionCountArgs>(
       args?: Subset<T, MessageReactionCountArgs>,
     ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+      T extends runtime.Types.Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], MessageReactionCountAggregateOutputType>
@@ -6572,30 +6591,30 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__MessageReactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__MessageReactionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    message<T extends MessageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MessageDefaultArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    message<T extends MessageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MessageDefaultArgs<ExtArgs>>): Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>
   }
 
 
@@ -6604,7 +6623,7 @@ export namespace Prisma {
   /**
    * Fields of the MessageReaction model
    */
-  interface MessageReactionFieldRefs {
+  export interface MessageReactionFieldRefs {
     readonly id: FieldRef<"MessageReaction", 'String'>
     readonly messageId: FieldRef<"MessageReaction", 'String'>
     readonly userId: FieldRef<"MessageReaction", 'String'>
@@ -6616,7 +6635,7 @@ export namespace Prisma {
   /**
    * MessageReaction findUnique
    */
-  export type MessageReactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6638,7 +6657,7 @@ export namespace Prisma {
   /**
    * MessageReaction findUniqueOrThrow
    */
-  export type MessageReactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6660,7 +6679,7 @@ export namespace Prisma {
   /**
    * MessageReaction findFirst
    */
-  export type MessageReactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6712,7 +6731,7 @@ export namespace Prisma {
   /**
    * MessageReaction findFirstOrThrow
    */
-  export type MessageReactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6764,7 +6783,7 @@ export namespace Prisma {
   /**
    * MessageReaction findMany
    */
-  export type MessageReactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6811,7 +6830,7 @@ export namespace Prisma {
   /**
    * MessageReaction create
    */
-  export type MessageReactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6833,7 +6852,7 @@ export namespace Prisma {
   /**
    * MessageReaction createMany
    */
-  export type MessageReactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * The data used to create many MessageReactions.
      */
@@ -6844,7 +6863,7 @@ export namespace Prisma {
   /**
    * MessageReaction createManyAndReturn
    */
-  export type MessageReactionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6867,7 +6886,7 @@ export namespace Prisma {
   /**
    * MessageReaction update
    */
-  export type MessageReactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6893,7 +6912,7 @@ export namespace Prisma {
   /**
    * MessageReaction updateMany
    */
-  export type MessageReactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * The data used to update MessageReactions.
      */
@@ -6911,7 +6930,7 @@ export namespace Prisma {
   /**
    * MessageReaction updateManyAndReturn
    */
-  export type MessageReactionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6941,7 +6960,7 @@ export namespace Prisma {
   /**
    * MessageReaction upsert
    */
-  export type MessageReactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6971,7 +6990,7 @@ export namespace Prisma {
   /**
    * MessageReaction delete
    */
-  export type MessageReactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -6993,7 +7012,7 @@ export namespace Prisma {
   /**
    * MessageReaction deleteMany
    */
-  export type MessageReactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Filter which MessageReactions to delete
      */
@@ -7007,7 +7026,7 @@ export namespace Prisma {
   /**
    * MessageReaction without action
    */
-  export type MessageReactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MessageReactionDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the MessageReaction
      */
@@ -7027,41 +7046,41 @@ export namespace Prisma {
    * Enums
    */
 
-  export const TransactionIsolationLevel: {
+  export const TransactionIsolationLevel = runtime.makeStrictEnum({
     ReadUncommitted: 'ReadUncommitted',
     ReadCommitted: 'ReadCommitted',
     RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
-  };
+  } as const)
 
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-  export const UserScalarFieldEnum: {
+  export const UserScalarFieldEnum = {
     id: 'id',
     username: 'username',
     password: 'password',
     bio: 'bio',
     isDeleted: 'isDeleted',
     profilePicture: 'profilePicture'
-  };
+  } as const
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-  export const RoomScalarFieldEnum: {
+  export const RoomScalarFieldEnum = {
     id: 'id',
     roomName: 'roomName',
     description: 'description',
     createdAt: 'createdAt',
     createdById: 'createdById',
     profilePicture: 'profilePicture'
-  };
+  } as const
 
   export type RoomScalarFieldEnum = (typeof RoomScalarFieldEnum)[keyof typeof RoomScalarFieldEnum]
 
 
-  export const MessageScalarFieldEnum: {
+  export const MessageScalarFieldEnum = {
     id: 'id',
     content: 'content',
     mediaUrl: 'mediaUrl',
@@ -7069,51 +7088,51 @@ export namespace Prisma {
     roomId: 'roomId',
     timestamp: 'timestamp',
     replyToId: 'replyToId'
-  };
+  } as const
 
   export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
 
 
-  export const MessageViewScalarFieldEnum: {
+  export const MessageViewScalarFieldEnum = {
     id: 'id',
     messageId: 'messageId',
     userId: 'userId',
     viewedAt: 'viewedAt'
-  };
+  } as const
 
   export type MessageViewScalarFieldEnum = (typeof MessageViewScalarFieldEnum)[keyof typeof MessageViewScalarFieldEnum]
 
 
-  export const MessageReactionScalarFieldEnum: {
+  export const MessageReactionScalarFieldEnum = {
     id: 'id',
     messageId: 'messageId',
     userId: 'userId',
     type: 'type'
-  };
+  } as const
 
   export type MessageReactionScalarFieldEnum = (typeof MessageReactionScalarFieldEnum)[keyof typeof MessageReactionScalarFieldEnum]
 
 
-  export const SortOrder: {
+  export const SortOrder = {
     asc: 'asc',
     desc: 'desc'
-  };
+  } as const
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-  export const QueryMode: {
+  export const QueryMode = {
     default: 'default',
     insensitive: 'insensitive'
-  };
+  } as const
 
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
-  export const NullsOrder: {
+  export const NullsOrder = {
     first: 'first',
     last: 'last'
-  };
+  } as const
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
@@ -10151,9 +10170,4 @@ export namespace Prisma {
   export type BatchPayload = {
     count: number
   }
-
-  /**
-   * DMMF
-   */
-  export const dmmf: runtime.BaseDMMF
 }
