@@ -30,7 +30,7 @@ jobs:
         working-directory: ./backend
         run: |
           npm ci
-          npx prisma generate
+          npx prisma generate --binary-target windows
           Get-ChildItem node_modules/.prisma/client -Force
           npm run build --if-present
           mkdir deploy
