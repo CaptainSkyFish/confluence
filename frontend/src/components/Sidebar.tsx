@@ -1,9 +1,12 @@
 import React from "react";
 import useGetAllRooms from "../hooks/useGetAllRooms";
 import RoomList from "./RoomList";
+import { useCheckHealth } from "../hooks/useCheckHealth";
 
 const Sidebar: React.FC = () => {
   const { data, isLoading, error } = useGetAllRooms();
+  const {apiHealth} = useCheckHealth()
+
   if (isLoading) {
     return (
       <div className="col-span-3 md:col-span-2 ml-3">
@@ -35,6 +38,7 @@ const Sidebar: React.FC = () => {
       <div className="col-span-3 md:col-span-2 ml-3">
         <h2 className="font-krylon text-xl font-extralight">Rooms</h2>
         <div className="text-red-800 max-w-fit">Error loading rooms</div>
+       {console.log(apiHealth)} 
       </div>
     );
   }

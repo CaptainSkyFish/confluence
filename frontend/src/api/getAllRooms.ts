@@ -6,4 +6,9 @@ const getAllRooms = async () => {
   return response.data;
 };
 
+export const checkHealth = async () => {
+  const response2 = await axios.get(`${BACKEND_URL}/api/health`)
+  console.log(response2.data)
+  return response2.data;
+}
 export default getAllRooms;

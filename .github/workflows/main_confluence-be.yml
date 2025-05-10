@@ -9,7 +9,7 @@ on:
       - 'backend/**'
       - '.github/workflows/main_confluence-be.yml'
     branches:
-      - main
+      - linux-deployment
   workflow_dispatch:
 
 jobs:
