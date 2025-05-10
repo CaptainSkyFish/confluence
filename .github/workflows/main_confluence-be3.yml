@@ -66,5 +66,5 @@ jobs:
         with:
           app-name: 'confluence-be3'
           slot-name: 'Production'
-          package: .
+          package: ./deploy
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BA9553DF498B4CA0BAD578380898B71D }}
