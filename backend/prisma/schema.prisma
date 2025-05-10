@@ -1,8 +1,9 @@
 generator client {
   provider      = "prisma-client"
-  binaryTargets = ["windows-ia32"]
+  binaryTargets = ["native"]
   engineType    = "binary"
   output        = "../src/generated/prisma"
+  runtime       = "nodejs"
 }
 
 datasource db {
