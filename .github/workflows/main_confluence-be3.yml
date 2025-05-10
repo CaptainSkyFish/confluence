@@ -35,7 +35,7 @@ jobs:
           mkdir -p deploy
           cp -r node_modules deploy/
           cp -r dist deploy/
-          cp src/generated/prisma/query-engine-windows.exe deploy/dist/generated/
+          cp src/generated/prisma/query-engine-windows.exe deploy/dist/generated/prisma/
           cp package.json deploy/
           cp package-lock.json deploy/
           cp .deployment deploy/
