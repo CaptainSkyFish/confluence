@@ -33,6 +33,7 @@ jobs:
           npx prisma generate
           npm run build
           mkdir -p deploy
+          ls
           cp -r node_modules deploy/
           cp -r dist deploy/
           cp src/generated/prisma/query-engine-windows.exe deploy/dist/generated/prisma/
