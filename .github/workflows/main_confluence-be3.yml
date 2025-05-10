@@ -33,14 +33,13 @@ jobs:
           npx prisma generate
           npm run build
           mkdir -p deploy
-          ls deploy
+          ls deploy/
           cp -r node_modules deploy/
           cp -r dist deploy/
           cp src/generated/prisma/query-engine-windows.exe deploy/dist/generated/prisma/
           cp package.json deploy/
           cp package-lock.json deploy/
           cp .deployment deploy/
-          cp web.config deploy/
       
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
