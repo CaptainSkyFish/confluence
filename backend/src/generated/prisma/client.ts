@@ -60,15 +60,6 @@ const config: runtime.GetPrismaClientConfig = {
       {
         "fromEnvVar": null,
         "value": "windows"
-      },
-      {
-        "fromEnvVar": null,
-        "value": "debian-openssl-3.0.x"
-      },
-      {
-        "fromEnvVar": null,
-        "value": "debian-openssl-3.0.x",
-        "native": true
       }
     ],
     "previewFeatures": [],
@@ -82,7 +73,7 @@ const config: runtime.GetPrismaClientConfig = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": true,
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -91,8 +82,8 @@ const config: runtime.GetPrismaClientConfig = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client\"\n  binaryTargets = [\"windows\", \"debian-openssl-3.0.x\", \"native\"]\n  engineType    = \"binary\"\n  output        = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id             String            @id @default(uuid())\n  username       String            @unique\n  password       String\n  messages       Message[]\n  reactions      MessageReaction[]\n  viewedMessages MessageView[]\n  bio            String\n  rooms          Room[]            @relation(\"Membership\")\n  createdRooms   Room[]            @relation(\"Creator\")\n  isDeleted      Boolean           @default(false)\n  profilePicture String?\n}\n\nmodel Room {\n  id             String    @id @default(cuid())\n  roomName       String\n  description    String\n  createdAt      DateTime  @default(now())\n  messages       Message[]\n  users          User[]    @relation(\"Membership\")\n  createdById    String\n  createdBy      User      @relation(\"Creator\", fields: [createdById], references: [id])\n  profilePicture String?\n}\n\nmodel Message {\n  id        String            @id @default(uuid())\n  content   String\n  mediaUrl  String?\n  senderId  String\n  roomId    String\n  timestamp DateTime          @default(now())\n  replyToId String?\n  replyTo   Message?          @relation(\"MessageReplies\", fields: [replyToId], references: [id])\n  replies   Message[]         @relation(\"MessageReplies\")\n  room      Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)\n  sender    User              @relation(fields: [senderId], references: [id])\n  reactions MessageReaction[]\n  views     MessageView[]\n}\n\nmodel MessageView {\n  id        String   @id @default(uuid())\n  messageId String\n  userId    String\n  viewedAt  DateTime @default(now())\n  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([messageId, userId])\n}\n\nmodel MessageReaction {\n  id        String  @id @default(uuid())\n  messageId String\n  userId    String\n  type      String\n  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)\n  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, messageId, type])\n}\n",
-  "inlineSchemaHash": "ba94be0d86217c5afb7fa76f7e3f9abeab17354a7d337d703f3b0de055f4236c",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client\"\n  binaryTargets = [\"windows\"]\n  engineType    = \"binary\"\n  output        = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id             String            @id @default(uuid())\n  username       String            @unique\n  password       String\n  messages       Message[]\n  reactions      MessageReaction[]\n  viewedMessages MessageView[]\n  bio            String\n  rooms          Room[]            @relation(\"Membership\")\n  createdRooms   Room[]            @relation(\"Creator\")\n  isDeleted      Boolean           @default(false)\n  profilePicture String?\n}\n\nmodel Room {\n  id             String    @id @default(cuid())\n  roomName       String\n  description    String\n  createdAt      DateTime  @default(now())\n  messages       Message[]\n  users          User[]    @relation(\"Membership\")\n  createdById    String\n  createdBy      User      @relation(\"Creator\", fields: [createdById], references: [id])\n  profilePicture String?\n}\n\nmodel Message {\n  id        String            @id @default(uuid())\n  content   String\n  mediaUrl  String?\n  senderId  String\n  roomId    String\n  timestamp DateTime          @default(now())\n  replyToId String?\n  replyTo   Message?          @relation(\"MessageReplies\", fields: [replyToId], references: [id])\n  replies   Message[]         @relation(\"MessageReplies\")\n  room      Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)\n  sender    User              @relation(fields: [senderId], references: [id])\n  reactions MessageReaction[]\n  views     MessageView[]\n}\n\nmodel MessageView {\n  id        String   @id @default(uuid())\n  messageId String\n  userId    String\n  viewedAt  DateTime @default(now())\n  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([messageId, userId])\n}\n\nmodel MessageReaction {\n  id        String  @id @default(uuid())\n  messageId String\n  userId    String\n  type      String\n  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)\n  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, messageId, type])\n}\n",
+  "inlineSchemaHash": "a74daaad406b4c0d7ef8fcb78f0ee6d34dac862570eca4539babbe2887be0c9f",
   "copyEngine": true,
   "runtimeDataModel": {
     "models": {},
@@ -112,10 +103,6 @@ config.compilerWasm = undefined
 // file annotations for bundling tools to include these files
 path.join(__dirname, "query-engine-windows")
 path.join(process.cwd(), "src/generated/prisma/query-engine-windows")
-
-// file annotations for bundling tools to include these files
-path.join(__dirname, "query-engine-debian-openssl-3.0.x")
-path.join(process.cwd(), "src/generated/prisma/query-engine-debian-openssl-3.0.x")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma")
 path.join(process.cwd(), "src/generated/prisma/schema.prisma")

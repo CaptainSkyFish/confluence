@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-  // binaryTargets = ["windows", "debian-openssl-3.0.x", "native"]
+  binaryTargets = ["windows"]
   engineType = "binary"
   output = "../src/generated/prisma"
 }
