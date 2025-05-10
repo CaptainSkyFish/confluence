@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-  binaryTargets = ["windows"]
+  // binaryTargets = []
   engineType = "binary"
   output = "../src/generated/prisma"
 }
