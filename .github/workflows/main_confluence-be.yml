@@ -9,8 +9,9 @@ on:
       - 'backend/**'
       - '.github/workflows/main_confluence-be.yml'
     branches:
-      - main
-  workflow_dispatch:
+      - linux-deployment
+  workflow_dispatch:
+
 
 jobs:
   build:
