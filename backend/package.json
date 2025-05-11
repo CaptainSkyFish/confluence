@@ -24,7 +24,7 @@
   "scripts": {
     "dev": "tsc -b && node dist/index.js",
     "build": "tsc -p tsconfig.build.json",
-    "start": "node app.js"
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
