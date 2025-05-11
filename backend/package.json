@@ -20,10 +20,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "start": "node app.js"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
