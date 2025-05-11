@@ -47,6 +47,6 @@ app.use("/api/v1/messages", messageRoutes);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`server running on http://localhost:${PORT}`);
 });
