@@ -1,13 +1,13 @@
 import dotenv from "dotenv"
 dotenv.config()
-import userRoutes from "./routes/userRoutes";
-import roomRoutes from "./routes/roomRoutes";
-import messageRoutes from "./routes/messageRoutes";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { setupWebSocketServer } from "./sockets/socketServer";
 import http from "http";
+import { setupWebSocketServer } from "./sockets/socketServer";
+import userRoutes from "./routes/userRoutes";
+import roomRoutes from "./routes/roomRoutes";
+import messageRoutes from "./routes/messageRoutes";
 
 const app = express();
 
