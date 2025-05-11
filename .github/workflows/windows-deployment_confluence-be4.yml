@@ -39,6 +39,7 @@ jobs:
           cp package-lock.json deploy/
           cp .deployment deploy/
           cp -r dist/* deploy/
+          cp web.config deploy/
           Get-ChildItem deploy/ -Force
 
       - name: Upload artifact for deployment job
