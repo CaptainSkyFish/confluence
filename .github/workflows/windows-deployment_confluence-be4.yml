@@ -32,6 +32,7 @@ jobs:
           npm ci
           npx prisma generate
           npm run build
+          cp -r src/generated/prisma/query-engine-windows.exe dist/generated/prisma
           mkdir deploy
           cp -r node_modules deploy/
           cp package.json deploy/
