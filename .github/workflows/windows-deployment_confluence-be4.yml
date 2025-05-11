@@ -38,7 +38,7 @@ jobs:
           cp package.json deploy/
           cp package-lock.json deploy/
           cp .deployment deploy/
-          cp -r dist/* deploy/
+          cp -r dist deploy/
           cp web.config deploy/
           Get-ChildItem deploy/ -Force
 
