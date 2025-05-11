@@ -32,13 +32,13 @@ jobs:
           npm ci
           npx prisma generate
           npm run build
-          cp -r src/generated/prisma/query-engine-windows.exe deploy/generated/prisma
+          cp -r src/generated/prisma/query-engine-windows.exe dist/generated/prisma
           mkdir deploy
           cp -r node_modules deploy/
-          cp -r dist/* deploy/
           cp package.json deploy/
           cp package-lock.json deploy/
           cp .deployment deploy/
+          cp -r dist/* deploy/
           Get-ChildItem deploy/ -Force
 
       - name: Upload artifact for deployment job
