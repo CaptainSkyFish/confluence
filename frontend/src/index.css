@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 body {
-  font-family: nebula-book, sans-serif;
+  font-family: nebula-light, sans-serif;
 }
 
 ::selection {
