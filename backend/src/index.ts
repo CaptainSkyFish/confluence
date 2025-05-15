@@ -13,7 +13,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://confluence-theta.vercel.app/",
+  "https://confluence-theta.vercel.app",
 ];
 
 app.use(
