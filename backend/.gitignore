@@ -1,0 +1,9 @@
+node_modules
+/src/generated/prisma
+!/src/generated/prisma/*.exe
+!/src/generated/prisma/query-engine-debian-openssl-3.0.x
+.prettierrc.json
+dist
+.env
+deploy.zip
+deploy

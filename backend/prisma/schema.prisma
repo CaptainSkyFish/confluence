@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client"
+  binaryTargets = ["windows", "debian-openssl-1.1.x", "native"]
+  engineType = "binary"
+  output = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String            @id @default(uuid())
+  username       String            @unique
+  password       String
+  messages       Message[]
+  reactions      MessageReaction[]
+  viewedMessages MessageView[]
+  bio            String
+  rooms          Room[]            @relation("Membership")
+  createdRooms   Room[]            @relation("Creator")
+  isDeleted      Boolean           @default(false)
+  profilePicture String?
+}
+
+model Room {
+  id             String    @id @default(cuid())
+  roomName       String
+  description    String
+  createdAt      DateTime  @default(now())
+  messages       Message[]
+  users          User[]    @relation("Membership")
+  createdById    String
+  createdBy      User      @relation("Creator", fields: [createdById], references: [id])
+  profilePicture String?
+}
+
+model Message {
+  id        String            @id @default(uuid())
+  content   String
+  mediaUrl  String?
+  senderId  String
+  roomId    String
+  timestamp DateTime          @default(now())
+  replyToId String?
+  replyTo   Message?          @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies   Message[]         @relation("MessageReplies")
+  room      Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender    User              @relation(fields: [senderId], references: [id])
+  reactions MessageReaction[]
+  views     MessageView[]
+}
+
+model MessageView {
+  id        String   @id @default(uuid())
+  messageId String
+  userId    String
+  viewedAt  DateTime @default(now())
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+}
+
+model MessageReaction {
+  id        String  @id @default(uuid())
+  messageId String
+  userId    String
+  type      String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, messageId, type])
+}
