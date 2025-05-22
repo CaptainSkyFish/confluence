@@ -1,9 +1,9 @@
 import React from "react";
-import useGetAllRooms from "../hooks/useGetAllRooms";
 import RoomList from "./RoomList";
+import useGetUserRooms from "../hooks/useGetUserRooms";
 
 const Sidebar: React.FC = () => {
-  const { data, isLoading, error } = useGetAllRooms();
+  const { data, isLoading, isError, error } = useGetUserRooms();
   if (isLoading) {
     return (
       <div className="col-span-3 md:col-span-2 ml-3">
@@ -39,7 +39,7 @@ const Sidebar: React.FC = () => {
     );
   }
 
-  return <RoomList rooms={data || []} />;
+  return <RoomList rooms={data} isError={isError} error={error ?? null} />;
 };
 
 export default Sidebar;

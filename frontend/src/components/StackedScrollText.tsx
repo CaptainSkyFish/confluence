@@ -37,7 +37,7 @@ export default function StackedScrollText() {
   return (
     <section
       ref={sectionRef}
-      className="h-[100vh] relative flex flex-col justify-center tracking-wider font-krylon rounded-4xl overflow-hidden leading-20 bg-cover bg-center items-center bg-[#0f0f0f] text-[#e9e6e1] font-bold text-5xl"
+      className="h-[100vh] relative flex flex-col justify-center tracking-wide lg:tracking-wider font-krylon rounded-4xl overflow-hidden leading-10 lg:leading-20 bg-cover bg-center items-center bg-[#0f0f0f] text-[#e9e6e1] font-bold  text-3xl lg:text-5xl"
       style={{ backgroundImage: "url('/images/last-supper.jpg')" }}
     >
       {" "}
@@ -53,7 +53,7 @@ export default function StackedScrollText() {
             textRefs.current[i] = el;
           }}
           className={`overflow-hidden will-change-transform w-full text-center ${
-            i === 2 ? "text-lg opacity-55 font-semibold" : ""
+            i === 2 ? "text-sm lg:text-lg opacity-55 font-semibold" : ""
           }`}
         >
           <div>{text}</div>

@@ -28,11 +28,11 @@ const PartnerCarousel = () => {
   ];
 
   return (
-    <div className="opacity-50 my-20 mt-[200px] overflow-hidden w-full bg-[#0f0f0f] py-4">
+    <div className="opacity-50 my-10 lg:my-20 lg:mt-[200px] overflow-hidden w-full bg-[#0f0f0f] lg:py-4">
       <div id="scroll-track" className="scrolling-track">
         {[...parodyApps, ...parodyApps].map((app, idx) => (
           <div key={idx} className="app-tile">
-            <div className="text-3xl">{app.logo}</div>
+            <div className="text-lg lg:text-3xl">{app.logo}</div>
             <span>{app.name}</span>
           </div>
         ))}

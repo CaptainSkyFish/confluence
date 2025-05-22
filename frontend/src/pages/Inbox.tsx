@@ -26,7 +26,7 @@ const Inbox = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-12 min-w-screen min-h-screen">
+        <div className="grid grid-cols-12 gap-6 min-w-screen min-h-screen">
           <Sidebar />
           <Chatbox />
         </div>

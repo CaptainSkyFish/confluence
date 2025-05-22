@@ -1,13 +1,9 @@
-import axios from "axios";
 import { BACKEND_URL } from "../config/backendUrl";
+import { axiosInstance } from "../config/axiosInstance";
 
 const getAllRooms = async () => {
-  const response = await axios.get(`${BACKEND_URL}/api/v1/rooms/all`);
+  const response = await axiosInstance.get(`${BACKEND_URL}/api/v1/rooms/all`);
   return response.data;
 };
 
-export const checkHealth = async () => {
-  const response2 = await axios.get(`${BACKEND_URL}/api/health`)
-  return response2.data;
-}
 export default getAllRooms;

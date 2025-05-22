@@ -15,14 +15,14 @@ const LandingPage = () => {
 
   return (
     <div>
-      <div className="relative max-w-fit bg-[#0f0f0f] min-h-screen z-10 mb-[350px] pb-50 rounded-b-4xl">
+      <div className="relative max-w-fit bg-[#0f0f0f] min-h-screen z-10 mb-[250px] lg:mb-[350px] pb-50 rounded-b-4xl">
         <Appbar />
-        <div className="grid w-4/5 mx-auto pt-[108px] px-12 grid-cols-2">
-          <div>
-            <div className="text-transparent fade-up bg-gradient-to-br from-[#ffffe0]/70 to-[#ffffe0] bg-clip-text font-krylon pl-0 font-bold text-wrap text-7xl/snug p-5">
+        <div className="grid justify-center grid-flow-row lg:grid-flow-col gap-15 lg:grid-rows-0 grid-rows-2 lg:w-4/5 lg:mx-auto pt-[108px] lg:px-12 lg:grid-cols-2">
+          <div className="flex lg:block lg:col-span-1 flex-col justify-center items-center">
+            <div className="text-transparent text-center md:w-[50%] lg:w-full lg:text-left fade-up bg-gradient-to-br from-[#ffffe0]/70 to-[#ffffe0] bg-clip-text font-krylon pl-0 font-bold text-wrap text-7xl/snug p-5">
               Where conversations come to life
             </div>
-            <div className="text-[#e9e6e1] fade-up pl-0 w-4/5 font-semibold text-wrap text-sm/normal p-2">
+            <div className="text-[#e9e6e1] text-center lg:text-left fade-up pl-0 w-4/5 font-semibold text-wrap text-sm/normal p-2">
               Build private rooms, invite friends, and experience seamless,
               secure real-time chat—right from your browser.
             </div>
@@ -46,7 +46,7 @@ const LandingPage = () => {
                 </svg>
                 <Link
                   to="/me"
-                  className="group-hover:pl-5 shine group-hover:underline transition-all duration-500 text-[#1C274C]"
+                  className="group-hover:pl-5 font-nebula-light shine group-hover:underline transition-all duration-500 text-[#1C274C]"
                 >
                   Get Started for free
                 </Link>
@@ -54,19 +54,19 @@ const LandingPage = () => {
               <div className="flex justify-center">
                 {!showInput ? (
                   <div
-                    className="hover:underline p-2 pl-0 font-bold hover:text-[#ffffe0] text-[#e9e6e1] cursor-pointer"
+                    className="hover:underline font-nebula-light p-2 pl-0 font-bold hover:text-[#ffffe0] text-[#e9e6e1] cursor-pointer"
                     onClick={handleJoinClick}
                   >
                     Join a Room?
                   </div>
                 ) : (
-                  <div className="relative max-w-fit">
+                  <div className="relative w-full max-w-xs">
                     <input
-                      className="pr-20 pl-3 py-3 rounded-sm border border-white font-bold text-[#e9e6e1] bg-transparent"
+                      className="w-full pr-24 pl-3 py-3 rounded-sm border-1 border- font-bold text-[#e9e6e1] bg-transparent"
                       type="text"
                       placeholder="Room Code"
                     />
-                    <button className="absolute right-1 top-1 bottom-1 px-3 bg-gradient-to-br from-[#977DFF]  to-[#F2E6EE] text-black font-semibold transition-all duration-350 rounded-sm hover:rounded-none hover:bg-[#977DFF]/70">
+                    <button className="absolute right-1 top-1 bottom-1 px-3 bg-gradient-to-br from-[#977DFF] to-[#F2E6EE] text-black font-semibold transition-all duration-350 rounded-sm hover:rounded-none hover:bg-[#977DFF]/70">
                       Join
                     </button>
                   </div>
@@ -74,14 +74,15 @@ const LandingPage = () => {
               </div>
             </div>
           </div>
-          <div className="absolute fade-up right-0 w-[750px] h-[550px] overflow-hidden rounded-tl-4xl bg-gradient-to-tr from-[#9796F0] to-[#FBC7D4]">
-            <div className="relative w-[800px] h-[600px] hover:-translate-y-2 hover:-translate-x-2 transition-transform duration-300 ease-in-out">
+          <div className="lg:absolute fade-up mx-3 lg:mx-0 lg:block flex col-span-1 lg:right-0 lg:w-[750px] w-fit h-[70%] lg:h-[550px] overflow-hidden rounded-t-4xl lg:rounded-tr-none bg-gradient-to-tr from-[#9796F0] to-[#FBC7D4]">
+            <div className="relative w-full h-full md:w-[750px] md:h-[450px] lg:w-[800px] lg:h-[600px] lg:hover:-translate-y-2  transition-transform duration-300 ease-in-out">
               <img
                 src="/images/landingPageimg.PNG"
                 alt="landingPageimg.jpeg"
-                className="object-cover object-top-left w-full h-full pt-2 pl-2 rounded-4xl"
+                className="lg:object-cover lg:object-top-left lg:w-full lg:h-full p-1 lg:p-2 lg:pt-4 lg:pl-4 rounded-4xl"
               />
-              <div className="absolute bottom-0 w-full h-[50%] opacity-80 pointer-events-none bg-gradient-to-t from-[#9796F0] to-transparent blur" />
+              <div className="absolute bottom-0 w-full h-[3%] pointer-events-none bg-gradient-to-r from-[#9796F0] to-[#FBC7D4]" />
+              <div className="absolute bottom-0 w-full h-[40%] lg:h-[50%] pointer-events-none bg-gradient-to-t from-[#9796F0] to-transparent blur" />
             </div>
           </div>{" "}
         </div>

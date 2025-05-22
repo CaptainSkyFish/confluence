@@ -29,6 +29,10 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!username || !password) {
+      showToast(`Username and Password are required.`, "error");
+      return;
+    }
     setLoading(true);
     try {
       const url = `${BACKEND_URL}/api/v1/users/${mode}`;
@@ -39,15 +43,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
 
       const res = await axios.post(url, payload, { withCredentials: true });
       const success = res.data?.success;
-      console.log(success); //remove log
-      showToast(
-        mode === "signup" ? "Signed up successfully!" : "Logged in!",
-        "success",
-      );
-      navigate("/me");
+      if (success) {
+        showToast(
+          mode === "signup" ? "Signed up successfully!" : "Logged in!",
+          "success",
+        );
+        navigate("/me");
+      } else showToast(`Something went wrong. Please Try again`, "error");
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        const errorMsg = err.response?.data?.errMes || err.message;
+        const errorMsg = err.response?.data?.errMes;
         showToast(errorMsg, "error");
       }
     } finally {

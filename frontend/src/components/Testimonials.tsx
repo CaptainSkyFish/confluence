@@ -5,67 +5,67 @@ const testimonials = [
     name: "Sebastian Speier",
     company: "Shop",
     comment:
-      "Mobbin is a great resource and it always comes in handy to see what the best practices or standards are for mobile patterns in our current landscape.",
+      "Confluence is a great resource and it always comes in handy to see what the best practices or standards are for mobile patterns in our current landscape.",
   },
   {
     name: "Marco Cornacchia",
     company: "Figma",
     comment:
-      "Mobbin is one of my favorite resources for product design and UI inspo. I love having access to a ton of real world examples.",
+      "Confluence is one of my favorite resources for product design and UI inspo. I love having access to a ton of real world examples.",
   },
   {
     name: "Daryl Ginn",
     company: "Endless",
     comment:
-      "Mobbin has quickly become our favourite inspiration resource for designing mobile apps at endless.design. Their advanced filtering is unmatched.",
+      "Confluence has quickly become our favourite inspiration resource for designing mobile apps at endless.design. Their advanced filtering is unmatched.",
   },
   {
     name: "Meng To",
     company: "DesignCode",
     comment:
-      "Mobbin is a game-changer for designers looking to step up their understanding of UX and UI design patterns. It’s so massive, meticulously organized, has deep user flows and even a figma plugin!",
+      "Confluence is a game-changer for designers looking to step up their understanding of UX and UI design patterns. It’s so massive, meticulously organized, has deep user flows and even a figma plugin!",
   },
   {
     name: "Taha Hossain",
     company: "Daybreak",
     comment:
-      "We can’t imagine a product design process without Mobbin. The clarity and precision it provides make it just as valuable as it is intuitive.",
+      "We can’t imagine a product design process without Confluence. The clarity and precision it provides make it just as valuable as it is intuitive.",
   },
   {
     name: "Haerin Song",
     company: "Klarna",
     comment:
-      "By using the Mobbin app, I save both my research time and space in my photo galleries filled with screenshots. It is a wonderful design tool.",
+      "By using the Confluence app, I save both my research time and space in my photo galleries filled with screenshots. It is a wonderful design tool.",
   },
   {
     name: "Meng To",
     company: "DesignCode",
     comment:
-      "Mobbin is a game-changer for designers looking to step up their understanding of UX and UI design patterns. It’s so massive, meticulously organized, has deep user flows and even a figma plugin!",
+      "Confluence is a game-changer for designers looking to step up their understanding of UX and UI design patterns. It’s so massive, meticulously organized, has deep user flows and even a figma plugin!",
   },
   {
     name: "Marco Cornacchia",
     company: "Figma",
     comment:
-      "Mobbin is one of my favorite resources for product design and UI inspo. I love having access to a ton of real world examples.",
+      "Confluence is one of my favorite resources for product design and UI inspo. I love having access to a ton of real world examples.",
   },
   {
     name: "Daryl Ginn",
     company: "Endless",
     comment:
-      "Mobbin has quickly become our favourite inspiration resource for designing mobile apps at endless.design. Their advanced filtering is unmatched.",
+      "Confluence has quickly become our favourite inspiration resource for designing mobile apps at endless.design. Their advanced filtering is unmatched.",
   },
   {
     name: "Taha Hossain",
     company: "Daybreak",
     comment:
-      "We can’t imagine a product design process without Mobbin. The clarity and precision it provides make it just as valuable as it is intuitive.",
+      "We can’t imagine a product design process without Confluence. The clarity and precision it provides make it just as valuable as it is intuitive.",
   },
   {
     name: "Haerin Song",
     company: "Klarna",
     comment:
-      "By using the Mobbin app, I save both my research time and space in my photo galleries filled with screenshots. It is a wonderful design tool.",
+      "By using the Confluence app, I save both my research time and space in my photo galleries filled with screenshots. It is a wonderful design tool.",
   },
 ];
 

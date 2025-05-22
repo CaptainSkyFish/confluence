@@ -41,7 +41,7 @@ export const Appbar = () => {
               strokeLinejoin="round"
             />
           </svg>
-          <div className="group-hover:pr-3 group-hover:pl-9 px-6 py-2 transition-all duration-500 text-[#e9e6e1]">
+          <div className="group-hover:pr-3 text-nowrap group-hover:pl-9 px-6 py-2 transition-all duration-500 text-[#e9e6e1]">
             Log in
           </div>
         </Link>

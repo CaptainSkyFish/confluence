@@ -36,7 +36,7 @@ export const TestimonialCard = ({
           <div className="text-zinc-400 text-sm">{company}</div>
         </div>
       </div>
-      <p className="text-zinc-300 tracking-wide text-semibold text-base/relaxed">
+      <p className="text-zinc-300 tracking-wide text-semibold text-sm/relaxed lg:text-base/relaxed">
         {comment}
       </p>
     </div>

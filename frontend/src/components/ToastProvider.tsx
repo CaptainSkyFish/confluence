@@ -1,5 +1,6 @@
 import { useState, ReactNode, useCallback } from "react";
 import { ToastContext } from "../contexts/ToastContext";
+import { CheckBadgeIcon, CrossBadgeIcon } from "../utils/StatusBadgeIcons";
 
 export type ToastType = "success" | "error";
 
@@ -28,10 +29,11 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`px-4 py-2 rounded shadow text-white animate-slide-in-out ${
+            className={`px-4 py-2 flex gap-3 rounded shadow text-white animate-slide-in-out ${
               toast.type === "success" ? "bg-green-600" : "bg-red-600"
             }`}
           >
+            {toast.type === "success" ? <CheckBadgeIcon /> : <CrossBadgeIcon />}
             {toast.message}
           </div>
         ))}
