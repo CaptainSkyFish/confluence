@@ -11,7 +11,7 @@ const Topbar = () => {
   return (
     <div className="z-10 px-6 py-3 md:px-8 md:py-4 bg-[#111928]/50 border-[#ffffff20] border-b-1 backdrop-blur-lg backdrop-saturate-180 backdrop-contrast-125 bg-blend-overlay flex justify-between items-center">
       <div className="text-white flex items-center">
-        <div className="md:text-lg text-sm border-l-white border-l pl-2">
+        <div className="md:text-lg text-sm border-l-white/70 border-l pl-2">
           {selectedRoom ? (
             selectedRoom.roomName
           ) : (

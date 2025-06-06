@@ -1,5 +1,5 @@
-import dotenv from "dotenv"
-dotenv.config()
+import dotenv from "dotenv";
+dotenv.config();
 import userRoutes from "./routes/userRoutes";
 import roomRoutes from "./routes/roomRoutes";
 import messageRoutes from "./routes/messageRoutes";
