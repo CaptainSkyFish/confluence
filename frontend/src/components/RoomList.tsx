@@ -3,7 +3,7 @@ import useRoomStore from "../store/useRoomStore";
 import { connectToRoom, disconnect } from "../config/socket";
 import { useToast } from "../hooks/useToast";
 import axios, { AxiosError } from "axios";
-import CreateRoomIcon from "../utils/CreateRoomIcon";
+import CreateRoomButton from "./CreateRoomButton";
 
 type Room = {
   id: string;
@@ -37,9 +37,7 @@ const RoomList: React.FC<RoomListProps> = ({ rooms, isError, error }) => {
         <h2 className="font-krylon text-xl  font-extralight">Rooms</h2>
         <div className="text-white">
           <div className="flex flex-col items-center gap-8 justify-center w-full">
-            <button className="cursor-pointer flex rounded-md p-2 items-center justify-center max-w-fit hover:bg-slate-600/30  hover:bg-backdrop-blur-xl">
-              <CreateRoomIcon /> Create{" "}
-            </button>
+            <CreateRoomButton />
             <div className="flex items-center w-full text-sm text-gray-400">
               <hr className="flex-grow border-gray-600" />
               <span className="mx-3">OR</span>
