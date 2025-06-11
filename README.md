@@ -1,2 +1,6 @@
 This is a simple broadcast chat app 
-coming soon....
+
+> 🚧 **Work in Progress**
+>
+> Confluence is currently in active development.
+
