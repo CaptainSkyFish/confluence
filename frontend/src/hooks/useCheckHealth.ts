@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { checkHealth } from "../api/getAllRooms";
+import checkHealth from "../api/checkApiHealth";
 
 export const useCheckHealth = () => {
   return useQuery({

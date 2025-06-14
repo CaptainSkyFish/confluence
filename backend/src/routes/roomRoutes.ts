@@ -10,10 +10,10 @@ import getUserRoomsHandler from "./roomRoutes/getUserRoomsHandler"
 
 const router = express.Router()
 
-router.post("/", authenticateUser, createRoomHandler)
+router.post("/create", authenticateUser, createRoomHandler)
 router.get("/all", getAllRoomsHandler)
 router.get("/users/:roomId", authenticateUser, getUsersInRoomHandler)
-router.get("/", authenticateUser, getUserRoomsHandler)
+router.get("/myrooms", authenticateUser, getUserRoomsHandler)
 router.post("/join/:roomId", authenticateUser, joinRoomHandler)
 router.post("/leave/:roomId", authenticateUser, leaveRoomHandler)
 router.delete("/delete/:roomId", authenticateUser, deleteRoomHandler)

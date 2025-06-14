@@ -16,14 +16,13 @@ const signinHandler: RequestHandler = async(req: Request, res: Response) => {
   const user = await prisma.user.findFirst({where: {username}})
   if(user){
 // if(await argon2.verify(user.password, password)){
-    if(await bcrypt.compare(user.password, password)){
+    if(await bcrypt.compare(password, user.password)){
       const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET!)
       res.cookie("jwt", token, {
         httpOnly: true,
         secure: true,
         sameSite: "lax",
-      }).json({success: true})
-      res.status(200).json(`Logged in as ${user.username}`)
+      }).json({success: true, message: `Logged in as ${user.username}`})
       return
     }
     res.status(400).json({ errMes: "Invalid Password" })
