@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config/backendUrl";
-import { useToast } from "../hooks/useToast";
 import { Link, useNavigate } from "react-router-dom";
 import { HidePasswordIcon, ShowPasswordIcon } from "../utils/PasswordIcons";
+import useToast from "../hooks/useToast";
 
 type AuthMode = "signin" | "signup";
 

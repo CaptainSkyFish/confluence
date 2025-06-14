@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect } from "react";
 import GradientMeshBackground from "./pages/GradientMeshBackground";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ToastProvider } from "./components/ToastProvider";
+import { ToastRenderer } from "./components/ToastRenderer";
 
 gsap.registerPlugin(ScrollTrigger);
 const queryClient = new QueryClient();
@@ -30,7 +30,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div>
-        <ToastProvider>
+        <ToastRenderer>
           <Router>
             <Routes>
               <Route path="/" element={<LandingPage />} />
@@ -40,7 +40,7 @@ function App() {
               <Route path="/test" element={<GradientMeshBackground />} />
             </Routes>
           </Router>
-        </ToastProvider>
+        </ToastRenderer>
       </div>
     </QueryClientProvider>
   );

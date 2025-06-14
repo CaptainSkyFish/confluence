@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import useRoomStore from "../store/useRoomStore";
 import { connectToRoom, disconnect } from "../config/socket";
-import { useToast } from "../hooks/useToast";
 import axios, { AxiosError } from "axios";
 import CreateRoomButton from "./CreateRoomButton";
+import useToast from "../hooks/useToast";
 
 type Room = {
   id: string;

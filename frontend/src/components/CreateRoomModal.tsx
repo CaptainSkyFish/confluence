@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useCreateRoom from "../hooks/useCreateRoom";
 import axios from "axios";
-import { useToast } from "../hooks/useToast";
+import useToast from "../hooks/useToast";
 
 const CreateRoomModal = ({ onClose }: { onClose: () => void }) => {
   const [roomName, setRoomName] = useState("");

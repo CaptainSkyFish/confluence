@@ -38,7 +38,7 @@ const signupHandler: RequestHandler = async (req: Request, res: Response) => {
         .cookie("jwt", token, {
           httpOnly: true,
           secure: true,
-          sameSite: "lax",
+          sameSite: "none",
         })
         .json({ success: true });
 

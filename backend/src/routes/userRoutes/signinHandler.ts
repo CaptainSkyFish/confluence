@@ -21,7 +21,7 @@ const signinHandler: RequestHandler = async(req: Request, res: Response) => {
       res.cookie("jwt", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
       }).json({success: true, message: `Logged in as ${user.username}`})
       return
     }
