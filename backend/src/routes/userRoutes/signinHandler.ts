@@ -19,9 +19,9 @@ const signinHandler: RequestHandler = async(req: Request, res: Response) => {
     if(await bcrypt.compare(password, user.password)){
       const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET!)
       res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        httpOnly: false,
+        secure: false,
+        sameSite: "lax",
       }).json({success: true, message: `Logged in as ${user.username}`})
       return
     }

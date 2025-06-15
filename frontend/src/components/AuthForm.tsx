@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../config/backendUrl";
 import { Link, useNavigate } from "react-router-dom";
 import { HidePasswordIcon, ShowPasswordIcon } from "../utils/PasswordIcons";
 import useToast from "../hooks/useToast";
+import useAuthMutation from "../mutations/useAuthMutation";
 
 type AuthMode = "signin" | "signup";
 
@@ -20,6 +20,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
   const [bioTouched, setBioTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const authMutation = useAuthMutation();
 
   useEffect(() => {
     if (!bioTouched && mode === "signup") {
@@ -34,30 +35,32 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
       return;
     }
     setLoading(true);
-    try {
-      const url = `${BACKEND_URL}/api/v1/users/${mode}`;
-      const payload =
-        mode === "signup"
-          ? { username, password, bio }
-          : { username, password };
-
-      const res = await axios.post(url, payload, { withCredentials: true });
-      const success = res.data?.success;
-      if (success) {
-        showToast(
-          mode === "signup" ? "Signed up successfully!" : "Logged in!",
-          "success",
-        );
-        navigate("/me");
-      } else showToast(`Something went wrong. Please Try again`, "error");
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const errorMsg = err.response?.data?.errMes;
-        showToast(errorMsg, "error");
-      }
-    } finally {
-      setLoading(false);
-    }
+    authMutation.mutate(
+      { username, password, bio, mode },
+      {
+        onSuccess: (data) => {
+          if (data?.success) {
+            showToast(
+              mode === "signin"
+                ? `Welcome back, ${username}.`
+                : `Signed up as ${username}`,
+              "success",
+            );
+            navigate("/me");
+          } else {
+            showToast(`Something went wrong. Please try again.`, "error");
+          }
+        },
+        onError: (error) => {
+          if (axios.isAxiosError(error)) {
+            const errorMsg = error.response?.data?.errMes ?? "Unknown error";
+            showToast(errorMsg, "error");
+          } else {
+            showToast("Unexpected error", "error");
+          }
+        },
+      },
+    );
   };
 
   return (
@@ -87,7 +90,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
                 type="text"
                 placeholder="Username"
                 value={username}
-                disabled={loading}
+                disabled={authMutation.isPending}
                 autoComplete="username"
                 onChange={(e) => setUsername(e.target.value)}
                 className="peer w-full font-nebula-light border-b border-b-[#0f0f0f] relative placeholder:absolute outline-none p-2 placeholder:duration-500 focus:placeholder:pt-10"
@@ -102,7 +105,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   value={password}
-                  disabled={loading}
+                  disabled={authMutation.isPending}
                   autoComplete={
                     mode === "signin" ? "current-password" : "new-password"
                   }
@@ -126,7 +129,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
                 <textarea
                   placeholder="Bio(optional)"
                   value={bio}
-                  disabled={loading}
+                  disabled={authMutation.isPending}
                   onChange={(e) => {
                     setBioTouched(true);
                     const bioMaxWordLength = 70;
@@ -138,7 +141,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
                         "error",
                       );
                   }}
-                  className="peer relative font-nebula-light focus:placeholder:pt-10 placeholder:absolute placeholder:duration-500 w-full h-fit resize-none overflow-hidden border-b focus:outline-none border-b-[#0f0f0f] p-2"
+                  className="peer relative font-nebula-light focus:placeholder:pt-15 placeholder:absolute placeholder:duration-500 w-full h-fit resize-none overflow-hidden border-b focus:outline-none border-b-[#0f0f0f] p-2"
                 />
               )}{" "}
               <span className="pl-2 duration-500 opacity-0 peer-focus:opacity-100 -translate-y-5 peer-focus:translate-y-0">
@@ -163,14 +166,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
               )}
               <button
                 type="submit"
-                disabled={loading}
+                disabled={authMutation.isPending}
                 className={`w-full flex-grow py-2 h-fit cursor-pointer rounded text-white transition ${
-                  loading
+                  authMutation.isPending
                     ? "bg-[#c8b3f6] cursor-not-allowed"
                     : "bg-[#2d1c7f] transition-all duration-400"
                 }`}
               >
-                {loading
+                {authMutation.isPending
                   ? "Please wait..."
                   : mode === "signup"
                     ? "Sign Up"

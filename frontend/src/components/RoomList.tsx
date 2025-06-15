@@ -22,7 +22,6 @@ const RoomList: React.FC<RoomListProps> = ({ rooms, isError, error }) => {
   const setSelectedRoom = useRoomStore((state) => state.setSelectedRoom);
   const { showToast } = useToast();
   useEffect(() => {
-    console.log(error);
     if (isError && axios.isAxiosError(error)) {
       const errorMsg =
         (error.response?.data as { errMes?: string })?.errMes ||

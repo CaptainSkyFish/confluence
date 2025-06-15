@@ -9,6 +9,8 @@ import { useEffect } from "react";
 import GradientMeshBackground from "./pages/GradientMeshBackground";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastRenderer } from "./components/ToastRenderer";
+import PublicOnlyLayout from "./layouts/PublicOnlyLayout";
+import PrivateOnlyLayout from "./layouts/PrivateOnlyLayout";
 
 gsap.registerPlugin(ScrollTrigger);
 const queryClient = new QueryClient();
@@ -18,7 +20,7 @@ function App() {
     gsap.from(".fade-up", {
       scrollTrigger: {
         trigger: ".fade-up",
-        start: "top bottom", // when top of element hits bottom of viewport
+        start: "top bottom",
         toggleActions: "play none none none",
       },
       y: 50,
@@ -27,16 +29,23 @@ function App() {
       ease: "power2.out",
     });
   }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <div>
         <ToastRenderer>
           <Router>
             <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/me" element={<Inbox />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/signin" element={<Signin />} />
+              <Route element={<PublicOnlyLayout />}>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/signin" element={<Signin />} />
+              </Route>
+
+              <Route element={<PrivateOnlyLayout />}>
+                <Route path="/me" element={<Inbox />} />
+              </Route>
+
               <Route path="/test" element={<GradientMeshBackground />} />
             </Routes>
           </Router>
@@ -45,4 +54,5 @@ function App() {
     </QueryClientProvider>
   );
 }
+
 export default App;

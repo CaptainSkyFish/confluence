@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Chatbox from "../components/Chatbox";
 import Sidebar from "../components/Sidebar";
+import { useEffect } from "react";
 
 const Inbox = () => {
   return (
