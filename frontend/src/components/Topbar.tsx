@@ -40,8 +40,8 @@ const Topbar = () => {
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg z-20 overflow-hidden">
-              <button className="w-full text-red-500 hover:bg-red-100 text-xs px-4 py-2 flex items-center">
+            <div className="absolute right-0 mt-2 w-fit text-nowrap bg-white rounded-md shadow-lg z-20 overflow-hidden">
+              <button className="w-fit font-nebula-medium font-bold text-red-500 m-1 hover:bg-red-200 text-xs px-4 rounded-[inherit] py-2 flex items-center">
                 <LeaveRoomIcon />
                 Leave Room
               </button>

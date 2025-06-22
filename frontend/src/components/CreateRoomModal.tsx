@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useToast from "../hooks/useToast";
 import useCreateRoom from "../mutations/useCreateRoom";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CreateRoomModal = ({ onClose }: { onClose: () => void }) => {
   const [roomName, setRoomName] = useState("");
   const [description, setDescription] = useState("");
   const { showToast } = useToast();
   const createRoomMutation = useCreateRoom();
-
+  const [blurActive, setBlurActive] = useState(false);
+  const queryClient = useQueryClient();
   const handleSubmit = () => {
     if (!roomName.trim()) {
       showToast("Room Name is required!", "error");
@@ -15,28 +17,40 @@ const CreateRoomModal = ({ onClose }: { onClose: () => void }) => {
     }
     createRoomMutation.mutate(
       { roomName, description },
-      { onSuccess: () => onClose() },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["userRooms"] });
+          onClose();
+        },
+      },
     );
   };
+  useEffect(() => {
+    setBlurActive(true);
+  }, []);
 
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 flex items-center border-1 border-black shadow-xl justify-center z-50 backdrop-blur-sm"
+      className={`fixed inset-0 flex items-center border-1 border-black shadow-xl justify-center z-50 transition duration-500 ease-in-out ${
+        blurActive
+          ? "backdrop-blur-xs opacity-100"
+          : "backdrop-blur-none opacity-0"
+      }`}
     >
       <form
         onSubmit={handleSubmit}
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="relative text-base tracking-tightest font-nebula-book bg-[#0f0f0f]/30 border-[#ffffff20] border-b-1 backdrop-blur-lg backdrop-saturate-180 backdrop-contrast-125 bg-blend-overlay p-6 rounded-xl w-[90%] max-w-md shadow-lg space-y-4"
+        className="relative text-base tracking-tightest font-nebula-book bg-[#0f0f0f]/30 border-[#ffffff20] border-b-1 backdrop-blur-2xl backdrop-saturate-180 backdrop-contrast-125 bg-blend-overlay p-6 rounded-xl w-[90%] max-w-md shadow-lg space-y-4"
       >
         <div
           onClick={onClose}
-          className="absolute top-5 left-3 h-4 w-4 rounded-full bg-[#d53230]/80 hover:bg-red-600 cursor-pointer"
+          className="absolute top-3 left-3 h-4 w-4 rounded-full bg-[#d53230]/80 hover:bg-red-600 cursor-pointer"
           title="Close"
         />
-        <h2 className="text-xl pt-8 font-nebula-light font-bold text-center">
+        <h2 className="text-2xl pt-8 font-nebula-light font-bold text-center">
           Create New Room
         </h2>
         <div className="flex flex-col-reverse">
@@ -74,6 +88,7 @@ const CreateRoomModal = ({ onClose }: { onClose: () => void }) => {
             Description
           </span>
         </div>
+
         <div className="flex justify-end gap-2">
           <button
             type="submit"

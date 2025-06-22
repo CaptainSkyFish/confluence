@@ -5,7 +5,7 @@ const Signin = () => {
   return (
     <div className="relative bg-[#191834]">
       <MovingBackground />
-        <AuthForm mode="signin" />
+      <AuthForm mode="signin" />
     </div>
   );
 };

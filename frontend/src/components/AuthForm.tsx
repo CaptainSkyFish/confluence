@@ -15,7 +15,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [bio, setBio] = useState("Hey there, I'm ");
-  const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
   const [bioTouched, setBioTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +33,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
       showToast(`Username and Password are required.`, "error");
       return;
     }
-    setLoading(true);
     authMutation.mutate(
       { username, password, bio, mode },
       {
@@ -74,7 +72,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
       <div className="flex h-screen justify-center items-center">
         <div className=" bg-[#0f0f0f]/30 text-[#e9e6e1] backdrop-blur-md w-full z-10 max-w-md mx-auto p-4 border border-[#0f0f0f]/20 rounded-xl shadow-xl">
           {/* 🔵 Loading bar */}
-          {/* {loading && ( */}
+          {/* {authMutation.isPending && ( */}
           {/*   <div className="absolute overflow-hidden top-0 left-0 h-1 w-full bg-[#0d0e20] animate-loading" /> */}
           {/* )} */}
 

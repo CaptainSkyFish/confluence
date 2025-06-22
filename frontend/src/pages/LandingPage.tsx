@@ -15,7 +15,7 @@ const LandingPage = () => {
 
   return (
     <div>
-      <div className="relative max-w-fit bg-[#0f0f0f] min-h-screen z-10 mb-[250px] lg:mb-[350px] pb-50 rounded-b-4xl">
+      <div className="relative max-w-full overflow-x-hidden bg-[#0f0f0f] min-h-screen z-10 mb-[250px] lg:mb-[350px] pb-50 rounded-b-4xl">
         <Appbar />
         <div className="grid justify-center grid-flow-row lg:grid-flow-col gap-25 grid-rows-2 lg:grid-rows-1 lg:w-4/5 lg:mx-auto pt-[150px] lg:px-12 lg:grid-cols-2">
           <div className="flex lg:block lg:col-span-1 flex-col justify-center items-center">

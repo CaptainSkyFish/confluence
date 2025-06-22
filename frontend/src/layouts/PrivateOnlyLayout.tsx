@@ -1,12 +1,13 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import getCookie from "../utils/getCookie";
+import { useMemo } from "react";
 
 export default function PrivateOnlyLayout() {
   const location = useLocation();
-  const token = getCookie("jwt");
+  const token = useMemo(()=> getCookie("jwt"),[]) 
 
   if (!token) {
-    <Navigate to="/signin" replace state={{ from: location }} />;
+    return <Navigate to="/signin" replace state={{ from: location }} />;
   }
 
   return <Outlet />;

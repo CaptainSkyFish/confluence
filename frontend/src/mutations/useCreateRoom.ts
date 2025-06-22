@@ -9,6 +9,7 @@ const useCreateRoom = () => {
   return useMutation({
     mutationFn: (payload: createRoomPayload) => createRoom(payload),
     onSuccess: (data) => {
+      showToast("room created!", "success");
       showToast(`Room ${data.roomName} created successfully!`, "success");
       //todo: open room automatically
     },

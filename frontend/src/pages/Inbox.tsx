@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 import Chatbox from "../components/Chatbox";
 import Sidebar from "../components/Sidebar";
-import { useEffect } from "react";
+import useSignOut from "../hooks/useSignOut";
+import useAuth from "../hooks/useAuth";
 
 const Inbox = () => {
+  const auth = useAuth();
+  const signOutMutation = useSignOut();
+  const username: string = auth?.username ?? "User";
+
   return (
     <div className="fixed inset-0 bg-[#0f0f0f] backdrop-blur-3xl">
       <div className="col-span-1 mx-2 h-screen w-full text-slate-100">
@@ -18,11 +23,21 @@ const Inbox = () => {
           </div>
           <div className="flex items-center p-4">
             {/* User Profile */}
-            <div className="relative group cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-slate-400"></div>{" "}
+            <div className="relative group">
+              <div className="w-10 h-10 rounded-full outline-[#9796F0] group-hover:outline-double cursor-default flex justify-center items-center font-extrabold capitalize bg-slate-400">
+                {username.split("")[0].charAt(0)}
+              </div>{" "}
               {/* Profile Picture */}
-              <div className="absolute top-1/2 -translate-y-1/2 right-12 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ease-in-out bg-slate-800 px-3 py-1 rounded-lg text-white text-sm">
-                Username
+              <div className="absolute outline space-x-10 outline-[#9796F0]/20 px-1 py-2 -translate-y-1/2 right-12 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ease-in-out w-fit text-center text-nowrap bg-[#1C274C]/20 text-[#e9e6e1] backdrop-blur-lg rounded-lg shadow-lg z-20 overflow-hidden">
+                <div className="w-full text-sm font-semibold px-2 py-2 text-center">
+                  {username}
+                </div>
+                <button
+                  onClick={() => signOutMutation.mutate(undefined)}
+                  className="w-full font-nebula-medium text-sm font-bold text-red-300 hover:text-red-400 hover:bg-red-300/30 py-2 rounded-[inherit] cursor-pointer"
+                >
+                  Logout
+                </button>
               </div>
             </div>
           </div>
@@ -37,6 +52,3 @@ const Inbox = () => {
 };
 
 export default Inbox;
-//<div className="fixed inset-0 z-[-1] overflow-hidden">
-//     <div className="w-full h-full animate-gradient bg-gradient-to-r from-[#4136c3] via-[#FBC7D4] to-[#9796F0] opacity-90 grainy"></div>
-//   </div>
