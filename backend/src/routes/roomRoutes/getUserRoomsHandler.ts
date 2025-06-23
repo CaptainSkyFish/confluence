@@ -9,7 +9,7 @@ const getUserRoomsHandler: RequestHandler = async (
   try {
     const userId = req.user?.userId;
     if (!userId) {
-      res.status(401).json({ error: "Unauthorized: User ID not found" });
+      res.status(401).json({ errMes: "Unauthorized: User ID not found" });
       return;
     }
 

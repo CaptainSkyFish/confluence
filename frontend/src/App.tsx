@@ -11,12 +11,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastRenderer } from "./components/ToastRenderer";
 import PublicOnlyLayout from "./layouts/PublicOnlyLayout";
 import PrivateOnlyLayout from "./layouts/PrivateOnlyLayout";
+import useUserStore from "./store/useUserStore";
 
 gsap.registerPlugin(ScrollTrigger);
 const queryClient = new QueryClient();
 
 function App() {
+  const getUser = useUserStore((state) => state.getUser);
   useEffect(() => {
+    getUser();
     gsap.from(".fade-up", {
       scrollTrigger: {
         trigger: ".fade-up",
@@ -36,14 +39,14 @@ function App() {
         <ToastRenderer>
           <Router>
             <Routes>
+              <Route element={<PrivateOnlyLayout />}>
+                <Route path="/me" element={<Inbox />} />
+              </Route>
+
               <Route element={<PublicOnlyLayout />}>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/signin" element={<Signin />} />
-              </Route>
-
-              <Route element={<PrivateOnlyLayout />}>
-                <Route path="/me" element={<Inbox />} />
               </Route>
 
               <Route path="/test" element={<GradientMeshBackground />} />

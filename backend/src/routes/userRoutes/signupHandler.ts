@@ -36,11 +36,15 @@ const signupHandler: RequestHandler = async (req: Request, res: Response) => {
       res
         .status(201)
         .cookie("jwt", token, {
-          httpOnly: false,
-          secure: true,
-          sameSite: "none",
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
         })
-        .json({ success: true });
+        .json({
+          user: { id: user.id, username: user.username, bio: user.username },
+          success: true,
+          message: `Signed up as ${user.username}`,
+        });
 
       return;
     }

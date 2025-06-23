@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { HidePasswordIcon, ShowPasswordIcon } from "../utils/PasswordIcons";
 import useToast from "../hooks/useToast";
 import useAuthMutation from "../mutations/useAuthMutation";
+import useUserStore from "../store/useUserStore";
 
 type AuthMode = "signin" | "signup";
 
@@ -20,6 +21,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const authMutation = useAuthMutation();
+  const setUser = useUserStore((state) => state.setUser);
 
   useEffect(() => {
     if (!bioTouched && mode === "signup") {
@@ -38,6 +40,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
       {
         onSuccess: (data) => {
           if (data?.success) {
+            setUser({
+              id: data.user.id,
+              username: data.user.username,
+              bio: data.user.bio,
+            });
             showToast(
               mode === "signin"
                 ? `Welcome back, ${username}.`
