@@ -37,8 +37,8 @@ const signupHandler: RequestHandler = async (req: Request, res: Response) => {
         .status(201)
         .cookie("jwt", token, {
           httpOnly: true,
-          secure: false,
-          sameSite: "lax",
+          secure: true,
+          sameSite: "none",
         })
         .json({
           user: { id: user.id, username: user.username, bio: user.username },

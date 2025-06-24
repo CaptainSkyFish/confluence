@@ -26,8 +26,8 @@ const signinHandler: RequestHandler = async (req: Request, res: Response) => {
         res
           .cookie("jwt", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
           })
           .json({
             user: { id: user.id, username: user.username, bio: user.username },
