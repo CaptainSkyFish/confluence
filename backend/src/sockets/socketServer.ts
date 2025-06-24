@@ -10,6 +10,7 @@ export const setupWebSocketServer = (server: Server) => {
   const wss = new WebSocketServer({ noServer: true });
 
   server.on("upgrade", (request, socket, head) => {
+    console.log('upgrade requested')
     const { pathname, query } = url.parse(request.url || "", true);
     const roomId = query.roomId as string;
 
