@@ -29,7 +29,7 @@ const Inbox = () => {
                 {username.split("")[0].charAt(0)}
               </div>{" "}
               {/* Profile Picture */}
-              <div className="absolute outline space-x-10 outline-[#9796F0]/20 px-1 py-2 -translate-y-1/2 mt-6 right-12 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ease-in-out w-fit text-center text-nowrap bg-[#1C274C]/20 text-[#e9e6e1] backdrop-blur-lg rounded-lg shadow-lg z-20 overflow-hidden">
+              <div className="absolute outline space-x-10 outline-[#9796F0]/20 px-1 py-2 -translate-y-1/2 mt-8 right-12 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ease-in-out w-fit text-center text-nowrap bg-[#1C274C]/20 text-[#e9e6e1] backdrop-blur-lg rounded-lg shadow-lg z-20 overflow-hidden">
                 <div className="w-full text-sm font-semibold px-2 py-2 text-center">
                   {username}
                 </div>

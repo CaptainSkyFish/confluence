@@ -12,6 +12,7 @@ import { ToastRenderer } from "./components/ToastRenderer";
 import PublicOnlyLayout from "./layouts/PublicOnlyLayout";
 import PrivateOnlyLayout from "./layouts/PrivateOnlyLayout";
 import useUserStore from "./store/useUserStore";
+import SessionLoader from "./components/SessionLoader";
 
 gsap.registerPlugin(ScrollTrigger);
 const queryClient = new QueryClient();
@@ -38,19 +39,21 @@ function App() {
       <div>
         <ToastRenderer>
           <Router>
-            <Routes>
-              <Route element={<PrivateOnlyLayout />}>
-                <Route path="/me" element={<Inbox />} />
-              </Route>
+            <SessionLoader>
+              <Routes>
+                <Route element={<PrivateOnlyLayout />}>
+                  <Route path="/me" element={<Inbox />} />
+                </Route>
 
-              <Route element={<PublicOnlyLayout />}>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/signin" element={<Signin />} />
-              </Route>
+                <Route element={<PublicOnlyLayout />}>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/signin" element={<Signin />} />
+                </Route>
 
-              <Route path="/test" element={<GradientMeshBackground />} />
-            </Routes>
+                <Route path="/test" element={<GradientMeshBackground />} />
+              </Routes>
+            </SessionLoader>
           </Router>
         </ToastRenderer>
       </div>

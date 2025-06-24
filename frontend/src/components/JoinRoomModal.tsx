@@ -1,22 +1,14 @@
 import { useState } from "react";
 import useToast from "../hooks/useToast";
 import useJoinRoom from "../hooks/useJoinRoom";
-import { useQueryClient } from "@tanstack/react-query";
 
 const JoinRoomModal = () => {
   const [roomCode, setRoomCode] = useState("");
   const { showToast } = useToast();
   const joinRoomMutation = useJoinRoom();
-  const queryClient = useQueryClient();
 
   const handleJoin = () => {
-    joinRoomMutation.mutate(roomCode, {
-      onSuccess: (data) => {
-        console.log(data);
-        queryClient.invalidateQueries({ queryKey: ["userRooms"] });
-        showToast("Joined Room Successfully!", "success");
-      },
-    });
+    joinRoomMutation.mutate(roomCode);
   };
 
   return (

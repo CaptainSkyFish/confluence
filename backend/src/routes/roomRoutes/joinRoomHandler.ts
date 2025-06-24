@@ -44,7 +44,7 @@ const joinRoomHandler: RequestHandler = async (req: Request, res: Response) => {
     include: { users: true }
   })
 
-  res.status(200).json({ room: updatedRoom.roomName, users: updatedRoom.users })
+  res.status(200).json({ roomName: updatedRoom.roomName, users: updatedRoom.users })
   return
   } catch(e) {
      console.error(e)
