@@ -2,9 +2,11 @@ import { BACKEND_URL } from "./backendUrl";
 
 let socket: WebSocket | null = null;
 const connectToRoom = (roomId: string) => {
-  socket = new WebSocket(
-    `wss://${BACKEND_URL.split(":")[1]}/ws?roomId=${roomId}`,
-  );
+  const url = new URL(BACKEND_URL);
+  const host = url.host;
+  const protocol = url.protocol === "https" ? "wss" : "ws";
+
+  socket = new WebSocket(`${protocol}://${host}/ws?roomId=${roomId}`);
   socket.onopen = () => {
     console.log(`connected to room ${roomId}`);
   };

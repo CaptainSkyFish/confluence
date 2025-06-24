@@ -1,6 +1,5 @@
 import { RawData, WebSocket, WebSocketServer } from "ws";
 import type { IncomingMessage, Server } from "http";
-import url from "url";
 
 type RoomId = string;
 
@@ -10,9 +9,9 @@ export const setupWebSocketServer = (server: Server) => {
   const wss = new WebSocketServer({ noServer: true });
 
   server.on("upgrade", (request, socket, head) => {
-    console.log('upgrade requested')
-    const { pathname, query } = url.parse(request.url || "", true);
-    const roomId = query.roomId as string;
+    const requestUrl = new URL(request.url!, request.headers.host)
+    const pathname = requestUrl.pathname
+    const roomId = requestUrl.searchParams.get('roomId')
 
     if (pathname === "/ws" && roomId) {
       wss.handleUpgrade(request, socket, head, (ws) => {
