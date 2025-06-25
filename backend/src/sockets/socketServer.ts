@@ -9,7 +9,8 @@ export const setupWebSocketServer = (server: Server) => {
   const wss = new WebSocketServer({ noServer: true });
 
   server.on("upgrade", (request, socket, head) => {
-    const requestUrl = new URL(request.url!, request.headers.host)
+    const protocol = request.headers['x-forwarded-proto'] || 'http'
+    const requestUrl = new URL(request.url!, `${protocol}://${ request.headers.host }`)
     const pathname = requestUrl.pathname
     const roomId = requestUrl.searchParams.get('roomId')
 
