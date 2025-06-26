@@ -39,9 +39,7 @@ export default function ChatInput() {
     createMessageMutation.mutate(
       {
         roomId: selectedRoom?.id,
-        content,
-        replyToId: null,
-        mediaUrl: null,
+        content: content,
       },
       {
         onSuccess: () => {

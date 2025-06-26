@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import getCurrentUser from "../api/getCurrentUser";
+import { AxiosError } from "axios";
 
 type User = {
   id: string;
@@ -25,10 +26,21 @@ const useUserStore = create<UserStore>((set) => ({
       const user = await getCurrentUser();
       set({ user: user, loading: false });
     } catch (e) {
-      if (e.response?.status === 401) {
-        set({ user: null, loading: false });
+      if (
+        typeof e === "object" &&
+        e !== null &&
+        "isAxiosError" in e &&
+        (e as AxiosError).isAxiosError
+      ) {
+        const axiosError = e as AxiosError;
+        if (axiosError.response?.status === 401) {
+          set({ user: null, loading: false });
+        } else {
+          console.error("Unexpected Axios error getting user:", axiosError);
+          set({ user: null, loading: false });
+        }
       } else {
-        console.error("Unexpected error getting user:", e);
+        console.error("Unexpected non-Axios error getting user:", e);
         set({ user: null, loading: false });
       }
     }

@@ -1,7 +1,7 @@
 import { axiosInstance } from "../config/axiosInstance";
 
-const leaveRoom = (roomId: string) => {
-  const response = axiosInstance.post(`/api/v1/rooms/leave/${roomId}`);
+const leaveRoom = async (roomId: string) => {
+  const response = await axiosInstance.post(`/api/v1/rooms/leave/${roomId}`);
   return response.data;
 };
 
