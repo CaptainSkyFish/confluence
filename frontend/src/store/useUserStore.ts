@@ -25,8 +25,12 @@ const useUserStore = create<UserStore>((set) => ({
       const user = await getCurrentUser();
       set({ user: user, loading: false });
     } catch (e) {
-      console.log(e);
-      set({ user: null, loading: false });
+      if (e.response?.status === 401) {
+        set({ user: null, loading: false });
+      } else {
+        console.error("Unexpected error getting user:", e);
+        set({ user: null, loading: false });
+      }
     }
   },
 }));

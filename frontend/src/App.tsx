@@ -20,7 +20,6 @@ const queryClient = new QueryClient();
 function App() {
   const getUser = useUserStore((state) => state.getUser);
   useEffect(() => {
-    getUser();
     gsap.from(".fade-up", {
       scrollTrigger: {
         trigger: ".fade-up",
@@ -32,6 +31,13 @@ function App() {
       duration: 1,
       ease: "power2.out",
     });
+    if (
+      location.pathname === "/signin" ||
+      location.pathname === "/signup" ||
+      location.pathname === "/"
+    )
+      return;
+    getUser();
   }, []);
 
   return (

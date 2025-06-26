@@ -9,8 +9,10 @@ const useSignOut = () => {
   return useMutation({
     mutationFn: signOut,
     onSuccess: () => {
-      navigate("/");
       showToast("Logged Out Successfully!", "success");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 0);
     },
   });
 };
