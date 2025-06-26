@@ -1,5 +1,6 @@
 import { RawData, WebSocket, WebSocketServer } from "ws";
 import type { IncomingMessage, Server } from "http";
+import jwt from "jsonwebtoken";
 
 type RoomId = string;
 
@@ -9,20 +10,31 @@ export const setupWebSocketServer = (server: Server) => {
   const wss = new WebSocketServer({ noServer: true });
 
   server.on("upgrade", (request, socket, head) => {
-    const protocol = request.headers['x-forwarded-proto'] || 'http'
-    const requestUrl = new URL(request.url!, `${protocol}://${ request.headers.host }`)
-    const pathname = requestUrl.pathname
-    const roomId = requestUrl.searchParams.get('roomId')
+    const protocol = request.headers["x-forwarded-proto"] || "http";
+    const requestUrl = new URL(
+      request.url!,
+      `${protocol}://${request.headers.host}`,
+    );
 
-    if (pathname === "/ws" && roomId) {
-      wss.handleUpgrade(request, socket, head, (ws) => {
-        wss.emit("connection", ws, request, roomId);
-      });
-    } else {
-      socket.destroy();
+    const token = requestUrl.searchParams.get("token");
+    if (!token) return socket.destroy();
+
+    let user;
+    try {
+      user = jwt.verify(token, process.env.JWT_SECRET!);
+    } catch (e) {
+      return socket.destroy();
     }
-  });
 
+    const pathname = requestUrl.pathname;
+
+    const roomId = requestUrl.searchParams.get("roomId");
+    if (pathname !== "/ws" || !roomId) return socket.destroy();
+
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      wss.emit("connection", ws, request, roomId);
+    });
+  });
 
   wss.on(
     "connection",

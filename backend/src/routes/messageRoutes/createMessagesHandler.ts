@@ -1,23 +1,26 @@
 import { Request, RequestHandler, Response } from "express";
 import prisma from "../../config/prisma";
 
-const createMessagesHandler: RequestHandler = async (req: Request, res: Response) => {
-  const roomId = req.params.roomId
-  const userId = req.user?.userId
+const createMessagesHandler: RequestHandler = async (
+  req: Request,
+  res: Response,
+) => {
+  const roomId = req.params.roomId;
+  const userId = req.user?.userId;
 
-  const { content, mediaUrl, replyToId } = req.body
+  const { content, mediaUrl, replyToId } = req.body;
 
   if (!userId) {
-    res.status(401).json({ errMes: "Unauthorized!" })
-    return
+    res.status(401).json({ errMes: "Unauthorized!" });
+    return;
   }
   if (!roomId) {
-    res.status(400).json({ errMes: "Missing or Invalid roomId" })
-    return
+    res.status(400).json({ errMes: "Missing or Invalid roomId" });
+    return;
   }
   if (!content) {
-    res.status(400).json({ errMes: "Missing content" })
-    return
+    res.status(400).json({ errMes: "Missing content" });
+    return;
   }
 
   try {
@@ -26,20 +29,29 @@ const createMessagesHandler: RequestHandler = async (req: Request, res: Response
         content,
         roomId,
         senderId: userId,
-        ...mediaUrl && { mediaUrl },
-        ...replyToId &&{ replyToId },
+        ...(mediaUrl && { mediaUrl }),
+        ...(replyToId && { replyToId }),
       },
       include: {
-        sender: true,
-        room: true
-      }
-    })
+        sender: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        room: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
 
-    res.status(200).json(newMessage)
+    res.status(200).json(newMessage);
   } catch (e) {
-    console.error(e)
-    res.status(400).json("Error while creating new message")
+    console.error(e);
+    res.status(500).json("Error while creating new message");
   }
-}
+};
 
-export default createMessagesHandler
+export default createMessagesHandler;
