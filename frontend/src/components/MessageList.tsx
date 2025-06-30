@@ -61,7 +61,6 @@ const MessageList = () => {
           </div>
 
           {messages.map((msg) => {
-            console.log(msg);
             const isOwnMessage = msg.sender.id === currentUser?.id;
             return (
               <div
