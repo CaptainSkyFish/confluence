@@ -19,7 +19,6 @@ const queryClient = new QueryClient();
 
 function App() {
   const getUser = useUserStore((state) => state.getUser);
-  console.log("Frontend sees:", import.meta.env.VITE_BACKEND_URL);
   useEffect(() => {
     gsap.from(".fade-up", {
       scrollTrigger: {
