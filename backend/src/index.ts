@@ -13,7 +13,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://confluence-theta.azurewebsites.net/",
+  "https://zealous-hill-073977c00.2.azurestaticapps.net",
 ];
 
 app.use(
