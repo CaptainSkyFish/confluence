@@ -1,5 +1,4 @@
 import { axiosInstance } from "../config/axiosInstance";
-import { BACKEND_URL } from "../config/backendUrl";
 
 interface AuthPayload {
   username: string;
@@ -14,7 +13,7 @@ const authenticateUser = async ({
   bio,
   mode,
 }: AuthPayload) => {
-  const url = `${BACKEND_URL}/api/v1/users/${mode}`;
+  const url = `/api/v1/users/${mode}`;
   const payload =
     mode === "signin" ? { username, password } : { username, password, bio };
 
