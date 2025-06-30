@@ -2,7 +2,7 @@ import axios from "axios";
 import useToastStore from "../store/toastStore";
 
 export const axiosInstance = axios.create({
-  baseURL: `${import.meta.env.VITE_BACKEND_URL}`,
+  baseURL: `${process.env.VITE_BACKEND_URL}`,
   withCredentials: true,
 });
 
