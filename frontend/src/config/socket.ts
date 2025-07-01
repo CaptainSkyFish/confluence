@@ -14,16 +14,16 @@ const connectToRoom = async (roomId: string) => {
     `${protocol}://${host}/ws?roomId=${roomId}&token=${token}`,
   );
   socket.onopen = () => {
-    console.log(`connected to room ${roomId}`); //remove log
+    // console.log(`connected to room ${roomId}`); //remove log
   };
   socket.onmessage = (event) => {
-    console.log(event.data); //check data sent by backend
+    // console.log(event.data); //check data sent by backend
     const parsed: DatabaseMessage = JSON.parse(event.data);
     console.log(parsed);
     useMessageStore.getState().addMessage(parsed);
   };
   socket.onclose = () => {
-    console.log(`Disconnected`); //remove log dosomething()
+    // console.log(`Disconnected`); //remove log dosomething()
   };
   socket.onerror = (err) => {
     console.error(err); //showToast maybe>

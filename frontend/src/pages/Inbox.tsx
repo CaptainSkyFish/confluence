@@ -3,12 +3,29 @@ import Chatbox from "../components/Chatbox";
 import Sidebar from "../components/Sidebar";
 import useSignOut from "../hooks/useSignOut";
 import useUserStore from "../store/useUserStore";
+import { useRef, useState } from "react";
 
 const Inbox = () => {
   const user = useUserStore((state) => state.user);
   const signOutMutation = useSignOut();
+  const [isHovered, setIsHovered] = useState(false);
   const username: string = user?.username ?? "User";
   const bio: string = user?.bio ?? "...";
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, 300);
+  };
 
   return (
     <div className="fixed inset-0 bg-[#0f0f0f] backdrop-blur-3xl">
@@ -24,24 +41,31 @@ const Inbox = () => {
           </div>
           <div className="flex items-center p-4">
             {/* User Profile */}
-            <div className="relative group">
+            <div
+              className="relative"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              {" "}
               <div className="w-10 h-10 rounded-full outline-[#9796F0] group-hover:outline-double cursor-default flex justify-center items-center font-extrabold capitalize bg-slate-400">
                 {username.split("")[0].charAt(0)}
               </div>{" "}
               {/* Profile Picture */}
-              <div className="absolute outline space-x-10 outline-[#9796F0]/20 px-1 py-2 -translate-y-1/2 mt-8 right-12 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ease-in-out w-fit text-center text-nowrap bg-[#1C274C]/20 text-[#e9e6e1] backdrop-blur-lg rounded-lg shadow-lg z-20 overflow-hidden">
-                <div className="w-full text-sm font-semibold px-2 py-2 text-center">
-                  {username}
-                </div>
-                <div className="w-full text-xs pb-3 text-center">{bio}</div>
+              {isHovered && (
+                <div className="fade-up absolute outline space-x-10 outline-[#9796F0]/20 px-1 py-2 -translate-y-1/2 mt-8 right-12 translate-x-0 transition-all duration-300 ease-in-out w-fit text-center text-nowrap bg-[#1C274C]/20 text-[#e9e6e1] backdrop-blur-lg rounded-lg shadow-lg z-20 overflow-hidden">
+                  <div className="w-full text-sm font-semibold px-2 py-2 text-center">
+                    {username}
+                  </div>
+                  <div className="w-full text-xs pb-3 text-center">{bio}</div>
 
-                <button
-                  onClick={() => signOutMutation.mutate(undefined)}
-                  className="w-full font-nebula-medium text-sm font-bold text-red-300 hover:text-red-400 hover:bg-red-300/30 py-2 rounded-[inherit] cursor-pointer"
-                >
-                  Logout
-                </button>
-              </div>
+                  <button
+                    onClick={() => signOutMutation.mutate(undefined)}
+                    className="w-full font-nebula-medium text-sm font-bold text-red-300 hover:text-red-400 hover:bg-red-300/30 py-2 rounded-[inherit] cursor-pointer"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

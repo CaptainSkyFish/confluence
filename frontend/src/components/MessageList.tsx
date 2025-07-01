@@ -50,13 +50,13 @@ const MessageList = () => {
   return (
     <div
       ref={scrollRef}
-      className="p-4 space-y-4 overflow-y-auto max-h-[60vh] scroll-smooth"
+      className="p-4 space-y-4 overflow-y-auto max-h-[60vh] scroll-smooth scrol scrollbar-hide"
     >
       {Object.entries(groupedByDate).map(([date, messages]) => (
         <div key={date} className="space-y-4">
           <div className="flex items-center my-4">
             <div className="flex-grow border-t border-white/20" />
-            <span className="px-4 text-sm text-white/60">{date}</span>
+            <span className="px-4 text-sm text-white/30">{date}</span>
             <div className="flex-grow border-t border-white/20" />
           </div>
 
@@ -65,22 +65,27 @@ const MessageList = () => {
             return (
               <div
                 key={msg.id}
-                className={`max-w-[75%] p-3 rounded-lg shadow-sm ${
+                className={`flex flex-col w-fit break-words max-w-[75%] py-2 rounded-2xl shadow-sm ${
                   isOwnMessage
-                    ? "ml-auto bg-blue-500/10 text-right"
-                    : "mr-auto bg-white/5 text-left"
+                    ? "ml-auto bg-blue-500/10 pr-3 pl-6 text-right"
+                    : "mr-auto bg-white/5 pl-3 pr-6 text-left"
                 }`}
               >
-                <div className="text-sm text-white/80">
-                  <strong>{msg.sender.username}</strong>{" "}
-                  <span className="text-xs text-white/50">
+                {isOwnMessage ? null : (
+                  <strong className="hover:underline text-xs text-white/80">
+                    {msg.sender.username}
+                  </strong>
+                )}
+
+                <div className={`flex items-baseline gap-2`}>
+                  <div className="text-white mt-1">{msg.content}</div>
+                  <span className="text-xs font-nebula-light text-white/30">
                     {new Date(msg.timestamp).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </span>
                 </div>
-                <div className="text-white mt-1">{msg.content}</div>
                 {msg.replyToId && (
                   <div className="text-xs text-white/40 mt-1">
                     ↪ in reply to {msg.replyToId}

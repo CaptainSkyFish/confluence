@@ -13,7 +13,7 @@ const Chatbox = () => {
 
       <Topbar />
 
-      <div className="grow z-10 p-1 space-y-2 overflow-y-auto">
+      <div className="grow z-10 px-20 p-1 space-y-2 overflow-y-auto">
         <MessageList />
       </div>
 

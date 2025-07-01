@@ -46,7 +46,7 @@ jobs:
           github_id_token: ${{ steps.idtoken.outputs.result }}
           ###### End of Repository/Build Configurations ######
         env:
-          VITE_BACKEND_URL: "https://confluence-be-gpatcqfqgwafd2br.centralindia-01.azurewebsites.net"
+          VITE_BACKEND_URL: "https://confluence-be4-hgf9drewcucyg9ct.centralindia-01.azurewebsites.net"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'

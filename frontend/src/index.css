@@ -121,6 +121,15 @@ body {
   pointer-events: none;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 @layer utilities {
   @keyframes slide-in-out {
     0% {
