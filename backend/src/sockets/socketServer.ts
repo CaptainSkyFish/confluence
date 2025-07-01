@@ -17,19 +17,26 @@ export const setupWebSocketServer = (server: Server) => {
     );
 
     const token = requestUrl.searchParams.get("token");
-    if (!token) return socket.destroy();
+    if (!token) {
+      console.error("User not found! Invalid JWT");
+      return socket.destroy();
+    }
 
     let user;
     try {
       user = jwt.verify(token, process.env.JWT_SECRET!);
     } catch (e) {
+      console.error("User not found! Invalid JWT");
       return socket.destroy();
     }
 
     const pathname = requestUrl.pathname;
 
     const roomId = requestUrl.searchParams.get("roomId");
-    if (pathname !== "/ws" || !roomId) return socket.destroy();
+    if (pathname !== "/ws" || !roomId) {
+      console.error("Invalid pathname or Missing roomId");
+      return socket.destroy();
+    }
 
     wss.handleUpgrade(request, socket, head, (ws) => {
       wss.emit("connection", ws, request, roomId);

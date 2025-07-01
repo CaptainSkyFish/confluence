@@ -1,14 +1,18 @@
+import getWsToken from "../api/getWsToken";
 import useMessageStore from "../store/useMessageStore";
 import { DatabaseMessage, SocketMessage } from "../types/messages";
 import { BACKEND_URL } from "./backendUrl";
 
 let socket: WebSocket | null = null;
-const connectToRoom = (roomId: string) => {
+const connectToRoom = async (roomId: string) => {
   const url = new URL(BACKEND_URL);
   const host = url.host;
   const protocol = url.protocol === "https:" ? "wss" : "ws";
+  const token = await getWsToken();
 
-  socket = new WebSocket(`${protocol}://${host}/ws?roomId=${roomId}`);
+  socket = new WebSocket(
+    `${protocol}://${host}/ws?roomId=${roomId}&token=${token}`,
+  );
   socket.onopen = () => {
     console.log(`connected to room ${roomId}`); //remove log
   };

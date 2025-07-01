@@ -3,6 +3,7 @@ dotenv.config();
 import userRoutes from "./routes/userRoutes";
 import roomRoutes from "./routes/roomRoutes";
 import messageRoutes from "./routes/messageRoutes";
+import wsTokenRoute from "./routes/wsTokenRoute";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -13,6 +14,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:4173",
   "https://zealous-hill-073977c00.2.azurestaticapps.net",
 ];
 
@@ -44,6 +46,8 @@ app.use("/api/v1/rooms", roomRoutes);
 app.use("/api/v1/users", userRoutes);
 
 app.use("/api/v1/messages", messageRoutes);
+
+app.use("/api/v1", wsTokenRoute);
 
 const PORT = process.env.PORT || 3000;
 
