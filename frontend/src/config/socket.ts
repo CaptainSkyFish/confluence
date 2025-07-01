@@ -22,7 +22,7 @@ const connectToRoom = (roomId: string) => {
     console.log(`Disconnected`); //remove log dosomething()
   };
   socket.onerror = (err) => {
-    console.log(err); //showToast maybe>
+    console.error(err); //showToast maybe>
   };
 };
 
