@@ -2,7 +2,7 @@ import axios from "axios";
 import useToastStore from "../store/toastStore";
 
 export const axiosInstance = axios.create({
-  baseURL: `https://confluence-be4-hgf9drewcucyg9ct.centralindia-01.azurewebsites.net`,
+  baseURL: `${process.env.VITE_BACKEND_URL}`,
   withCredentials: true,
 });
 
